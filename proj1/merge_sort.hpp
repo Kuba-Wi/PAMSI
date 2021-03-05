@@ -3,8 +3,8 @@
 
 template <std::size_t size>
 void merge(std::array<int, size>& T, std::size_t first, std::size_t middle, std::size_t last) {
-    std::vector<int> temp_tab;
-    std::copy(T.begin() + first, T.begin() + last + 1, std::back_inserter(temp_tab));
+    std::vector<int> temp_tab(last - first + 1);
+    std::copy(T.begin() + first, T.begin() + last + 1, temp_tab.begin());
     std::size_t temp_index = 0;
     std::size_t left_index = first;
     std::size_t right_index = middle + 1;
