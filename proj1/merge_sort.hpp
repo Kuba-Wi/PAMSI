@@ -1,9 +1,11 @@
 #include <array>
+#include <vector>
 
 template <std::size_t size>
 void merge(std::array<int, size>& T, std::size_t first, std::size_t middle, std::size_t last) {
-    auto temp_tab = T;
-    std::size_t temp_index = first;
+    std::vector<int> temp_tab;
+    std::copy(T.begin() + first, T.begin() + last + 1, std::back_inserter(temp_tab));
+    std::size_t temp_index = 0;
     std::size_t left_index = first;
     std::size_t right_index = middle + 1;
     while (left_index <= middle && right_index <= last) {
@@ -18,7 +20,7 @@ void merge(std::array<int, size>& T, std::size_t first, std::size_t middle, std:
     while (right_index <= last)
         temp_tab[temp_index++] = T[right_index++];
 
-    T = temp_tab;
+    std::copy(temp_tab.begin(), temp_tab.end(), T.begin() + first);
 }
 
 template <std::size_t size>
