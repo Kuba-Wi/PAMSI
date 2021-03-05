@@ -1,3 +1,5 @@
+#pragma once
+
 #include <array>
 #include <vector>
 
@@ -52,14 +54,4 @@ void merge_sort_n_r(std::array<int, size>& T, std::size_t first, std::size_t las
     // merge(T, 3, 3, 4);
     // merge(T, 3, 4, 5);
     // merge(T, 0, 2, 5);
-}
-
-template <std::size_t size>
-void bubble_sort(std::array<int, size>& tab) {
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size - 1; j++) {
-            if (tab[j] > tab[j + 1])
-                std::swap(tab[j], tab[j + 1]);
-        }
-    }
 }
