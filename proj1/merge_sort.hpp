@@ -41,7 +41,7 @@ void merge_sort_n_r(std::array<int, size>& T, std::size_t first, std::size_t las
             merge(T, index, index + step / 2, index + step - 1);
             index += step;
         }
-       
+
         ++step;
         index = first;
     }
@@ -61,4 +61,3 @@ void bubble_sort(std::array<int, size>& tab) {
         }
     }
 }
-

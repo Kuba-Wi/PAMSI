@@ -3,6 +3,7 @@
 #include <iostream>
 #include <random>
 #include "merge_sort.hpp"
+#include "quick_sort.hpp"
 
 int main() {
     constexpr std::size_t size = 10;
@@ -13,7 +14,7 @@ int main() {
         std::cout << i << " ";
     }
     std::cout << "\n";
-    merge_sort(t, 0, size - 1);
+    quick_sort(t, 0, size - 1);
     for (auto i : t) {
         std::cout << i << " ";
     }
