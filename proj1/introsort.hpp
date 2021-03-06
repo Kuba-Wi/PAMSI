@@ -4,8 +4,8 @@
 #include <cmath>
 #include "quick_sort.hpp"
 
-template <std::size_t size>
-void shift_down(std::array<int, size>& T, std::size_t first, std::size_t parent_to_change, std::size_t last) {
+template <typename ArrayType>
+void shift_down(ArrayType& T, std::size_t first, std::size_t parent_to_change, std::size_t last) {
     std::size_t max_index = parent_to_change;
     std::size_t parent_index;
     std::size_t child_index;
@@ -27,8 +27,8 @@ void shift_down(std::array<int, size>& T, std::size_t first, std::size_t parent_
     } while (parent_index != max_index);
 }
 
-template <std::size_t size>
-void heap_sort(std::array<int, size>& T, std::size_t first, std::size_t last) {
+template <typename ArrayType>
+void heap_sort(ArrayType& T, std::size_t first, std::size_t last) {
     for (int i = (last - first + 1) / 2 + first - 1; i >= int(first); --i) {
         shift_down(T, first, i, last);
     }
@@ -38,16 +38,22 @@ void heap_sort(std::array<int, size>& T, std::size_t first, std::size_t last) {
     }
 }
 
-template <std::size_t size>
-void intro_sort(std::array<int, size>& T, std::size_t first, std::size_t last, int M = (int)floor(2 * log2(size))) {
-    if(first >= last) {
+template <typename ArrayType>
+void intro_main(ArrayType& T, std::size_t first, std::size_t last, int M) {
+    if (first >= last) {
         return;
     }
-    if(M <= 0) {
+    if (M <= 0) {
         heap_sort(T, first, last);
         return;
     }
     auto divide_index = divide_array(T, first, last);
-    intro_sort(T, first, divide_index, M - 1);
-    intro_sort(T, divide_index + 1, last, M - 1);
+    intro_main(T, first, divide_index, M - 1);
+    intro_main(T, divide_index + 1, last, M - 1);
+}
+
+template <typename ArrayType>
+void intro_sort(ArrayType& T, std::size_t first, std::size_t last) {
+    int M = (int)floor(2 * log2(last - first + 1));
+    intro_main(T, first, last, M);
 }

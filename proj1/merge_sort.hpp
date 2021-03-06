@@ -3,10 +3,9 @@
 #include <array>
 #include <vector>
 
-template <std::size_t size>
-void merge(std::array<int, size>& T, std::size_t first, std::size_t middle, std::size_t last) {
-    std::vector<int> temp_tab(last - first + 1);
-    std::copy(T.begin() + first, T.begin() + last + 1, temp_tab.begin());
+template <typename ArrayType>
+void merge(ArrayType& T, std::size_t first, std::size_t middle, std::size_t last) {
+    std::vector temp_tab(std::begin(T) + first, std::begin(T) + last + 1);
     std::size_t temp_index = 0;
     std::size_t left_index = first;
     std::size_t right_index = middle + 1;
@@ -22,11 +21,11 @@ void merge(std::array<int, size>& T, std::size_t first, std::size_t middle, std:
     while (right_index <= last)
         temp_tab[temp_index++] = T[right_index++];
 
-    std::copy(temp_tab.begin(), temp_tab.end(), T.begin() + first);
+    std::copy(temp_tab.begin(), temp_tab.end(), std::begin(T) + first);
 }
 
-template <std::size_t size>
-void merge_sort(std::array<int, size>& T, std::size_t first, std::size_t last) {
+template <typename ArrayType>
+void merge_sort(ArrayType& T, std::size_t first, std::size_t last) {
     if (first >= last) {
         return;
     }

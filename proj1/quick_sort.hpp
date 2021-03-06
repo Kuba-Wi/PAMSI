@@ -2,10 +2,10 @@
 
 #include <array>
 
-template <std::size_t size>
-std::size_t divide_array(std::array<int, size>& T, std::size_t first, std::size_t last) {
+template <typename ArrayType>
+std::size_t divide_array(ArrayType& T, std::size_t first, std::size_t last) {
     std::size_t middle = (first + last) / 2;
-    int middle_value = T[middle];
+    auto middle_value = T[middle];
     std::swap(T[middle], T[last]);
 
     std::size_t current_index = first;
@@ -18,8 +18,8 @@ std::size_t divide_array(std::array<int, size>& T, std::size_t first, std::size_
     return current_index;
 }
 
-template <std::size_t size>
-void quick_sort(std::array<int, size>& T, std::size_t first, std::size_t last) {
+template <typename ArrayType>
+void quick_sort(ArrayType& T, std::size_t first, std::size_t last) {
     if (first >= last) {
         return;
     }
