@@ -34,23 +34,3 @@ void merge_sort(ArrayType& T, std::size_t first, std::size_t last) {
     merge_sort(T, middle + 1, last);
     merge(T, first, middle, last);
 }
-
-template <std::size_t size>
-void merge_sort_n_r(std::array<int, size>& T, std::size_t first, std::size_t last) {
-    std::size_t step = 1;
-    std::size_t index = first;
-    while (step < size) {
-        while (index + step - 1 <= last) {
-            merge(T, index, index + step / 2, index + step - 1);
-            index += step;
-        }
-
-        ++step;
-        index = first;
-    }
-    // merge(T, 0, 0, 1);
-    // merge(T, 0, 1, 2);
-    // merge(T, 3, 3, 4);
-    // merge(T, 3, 4, 5);
-    // merge(T, 0, 2, 5);
-}
