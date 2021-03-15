@@ -6,35 +6,73 @@
 #include <random>
 #include <vector>
 
-template <typename T>
-void fill_tables(T& tables, std::size_t size, std::size_t elements_num) {
-    constexpr std::size_t sort_percent_size = 7;
-    std::array<double, sort_percent_size> sort_percent{0, 0.25, 0.5, 0.75, 0.95, 0.99, 0.997};
+template <typename T, typename Arr>
+void fill_partly_sorted(T& tables,
+                        const Arr& sort_percent,
+                        std::size_t elements_sizes,
+                        std::size_t first,
+                        std::size_t last) {
     std::size_t index_perc = 0;
-
-    for (std::size_t i = 0; i < size * 0.75; ++i) {
-        tables[i].resize(elements_num);
+    for (std::size_t i = first; i <= last; ++i) {
+        tables[i].resize(elements_sizes);
         std::iota(tables[i].begin(), tables[i].end(), 1);
-        std::shuffle(tables[i].begin() + sort_percent[index_perc] * elements_num, tables[i].end(),
+        std::shuffle(tables[i].begin() + sort_percent[index_perc] * elements_sizes, tables[i].end(),
                      std::mt19937{std::random_device{}()});
-        if (++index_perc >= sort_percent_size) {
+        if (++index_perc >= sort_percent.size()) {
             index_perc = 0;
         }
     }
-    for (std::size_t i = size * 0.75; i < size; ++i) {
-        tables[i].resize(elements_num);
-        std::generate(tables[i].begin(), tables[i].end(), [n{elements_num}]() mutable { return n--; });
+}
+
+template <typename T>
+void fill_tables(T& tables, std::size_t size, std::size_t elements_sizes) {
+    for (std::size_t i = 0; i < 25; ++i) {
+        tables[i].resize(elements_sizes);
+        std::iota(tables[i].begin(), tables[i].end(), 1);
+        std::shuffle(tables[i].begin(), tables[i].end(), std::mt19937{std::random_device{}()});
+    }
+
+    std::array sort_percent{0.25, 0.5, 0.75};
+    fill_partly_sorted(tables, sort_percent, elements_sizes, 25, 49);
+    sort_percent = {0.95, 0.99, 0.997};
+    fill_partly_sorted(tables, sort_percent, elements_sizes, 50, 74);
+
+    for (std::size_t i = 75; i < size; ++i) {
+        tables[i].resize(elements_sizes);
+        std::generate(tables[i].begin(), tables[i].end(), [n{elements_sizes}]() mutable { return n--; });
     }
 }
 
 template <typename Sort_fun, typename T>
-void sort_experiment(Sort_fun sort_fun, T& tables, std::size_t elements_num) {
+auto sort_time(Sort_fun sort_fun, T& tables, std::size_t elements_sizes, std::size_t first, std::size_t last) {
     auto start = std::chrono::high_resolution_clock::now();
-    for (auto& tab : tables) {
-        sort_fun(tab, 0, elements_num - 1);
+    for (std::size_t i = first; i <= last; ++i) {
+        sort_fun(tables[i], 0, elements_sizes - 1);
     }
     auto stop = std::chrono::high_resolution_clock::now();
-    std::cout << elements_num
-              << " elements: " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count()
-              << " ms\n";
+    return std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+}
+
+template <typename Sort_fun, typename T>
+void sort_experiment(Sort_fun sort_fun, T& tables, std::size_t size, std::size_t elements_sizes) {
+    auto [all, one_time] = std::make_pair<int, int>(0, 0);
+    std::cout << elements_sizes << " elements:\n";
+
+    one_time = sort_time(sort_fun, tables, elements_sizes, 0, 24);
+    std::cout << "\t25 tables of random numbers:\t" << one_time << " ms\n";
+    all += one_time;
+
+    one_time = sort_time(sort_fun, tables, elements_sizes, 25, 49);
+    std::cout << "\t25 tables sorted in 25%, 50%, 75%:\t " << one_time << " ms\n";
+    all += one_time;
+
+    one_time = sort_time(sort_fun, tables, elements_sizes, 50, 74);
+    std::cout << "\t25 tables sorted in 95%, 99%, 99.7%:\t " << one_time << " ms\n";
+    all += one_time;
+
+    one_time = sort_time(sort_fun, tables, elements_sizes, 75, size - 1);
+    std::cout << "\t25 tables of reverse sorted numbers:\t" << one_time << " ms\n";
+    all += one_time;
+
+    std::cout << "\tAll time: " << all << "\n";
 }

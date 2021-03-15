@@ -15,25 +15,25 @@ int main() {
     std::cout << "Merge sort:\n";
     for (auto i : sizes) {
         fill_tables(tables, size, i);
-        sort_experiment(merge_sort<std::vector<int>>, tables, i);
+        sort_experiment(merge_sort<std::vector<int>>, tables, size, i);
     }
 
     std::cout << "\nQuick sort:\n";
     for (auto i : sizes) {
         fill_tables(tables, size, i);
-        sort_experiment(quick_sort<std::vector<int>>, tables, i);
+        sort_experiment(quick_sort<std::vector<int>>, tables, size, i);
     }
 
     std::cout << "\nIntro sort:\n";
     for (auto i : sizes) {
         fill_tables(tables, size, i);
-        sort_experiment(intro_sort<std::vector<int>>, tables, i);
+        sort_experiment(intro_sort<std::vector<int>>, tables, size, i);
     }
 
     std::cout << "\nHeap sort:\n";
     for (auto i : sizes) {
         fill_tables(tables, size, i);
-        sort_experiment(heap_sort<std::vector<int>>, tables, i);
+        sort_experiment(heap_sort<std::vector<int>>, tables, size, i);
     }
 
     return 0;
