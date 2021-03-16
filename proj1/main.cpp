@@ -8,32 +8,31 @@
 #include "sort_experiments.hpp"
 
 int main() {
-    constexpr std::size_t size = 100;
-    std::vector<std::vector<int>> tables(size);
-    std::array<std::size_t, 5> sizes{10'000, 50'000, 100'000, 500'000, 1'000'000};
+    std::vector<std::vector<int>> tables(100);
+    const std::array<std::size_t, 5> sizes{10'000, 50'000, 100'000, 500'000, 1'000'000};
 
     std::cout << "Merge sort:\n";
     for (auto i : sizes) {
-        fill_tables(tables, size, i);
-        sort_experiment(merge_sort<std::vector<int>>, tables, size, i);
+        fill_tables(tables, i);
+        sort_experiment(merge_sort<std::vector<int>>, tables, i);
     }
 
     std::cout << "\nQuick sort:\n";
     for (auto i : sizes) {
-        fill_tables(tables, size, i);
-        sort_experiment(quick_sort<std::vector<int>>, tables, size, i);
+        fill_tables(tables, i);
+        sort_experiment(quick_sort<std::vector<int>>, tables, i);
     }
 
     std::cout << "\nIntro sort:\n";
     for (auto i : sizes) {
-        fill_tables(tables, size, i);
-        sort_experiment(intro_sort<std::vector<int>>, tables, size, i);
+        fill_tables(tables, i);
+        sort_experiment(intro_sort<std::vector<int>>, tables, i);
     }
 
     std::cout << "\nHeap sort:\n";
     for (auto i : sizes) {
-        fill_tables(tables, size, i);
-        sort_experiment(heap_sort<std::vector<int>>, tables, size, i);
+        fill_tables(tables, i);
+        sort_experiment(heap_sort<std::vector<int>>, tables, i);
     }
 
     return 0;
