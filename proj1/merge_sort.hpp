@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include <vector>
 
 template <typename ArrayType>

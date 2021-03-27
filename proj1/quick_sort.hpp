@@ -1,7 +1,5 @@
 #pragma once
 
-#include <array>
-
 template <typename ArrayType>
 std::size_t divide_array(ArrayType& T, std::size_t first, std::size_t last) {
     std::size_t middle = (first + last) / 2;
