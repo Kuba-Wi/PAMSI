@@ -4,21 +4,22 @@
 #include "graph_matrix.hpp"
 
 int main() {
-    std::ifstream strm{"../input.txt"};
+    std::ifstream strm{"../input1.txt"};
     if (!strm.is_open()) {
         std::cout << "File not open\n";
     }
-    graph_list graph;
-    graph.build_list(strm);
+    graph_list graph{strm};
     strm.close();
     graph.display_list(std::cout);
-
-    strm.open("../input.txt");
+    std::cout << "\n";
+    graph.find_paths();
+    graph.display_paths();
+    std::cout << "\n";
+    strm.open("../input1.txt");
     if (!strm.is_open()) {
         std::cout << "File not open\n";
     }
-    graph_matrix graph_m;
-    graph_m.build_matrix(strm);
+    graph_matrix graph_m{strm};
     strm.close();
     graph_m.display_matrix(std::cout);
 

@@ -3,8 +3,10 @@
 
 class graph_matrix {
 public:
+    graph_matrix(std::istream& strm);
+    graph_matrix(const graph_matrix&) = delete;
+    graph_matrix& operator=(const graph_matrix&) = delete;
     ~graph_matrix();
-    void build_matrix(std::istream& strm);
     void display_matrix(std::ostream& strm);
 
 private:
