@@ -15,9 +15,9 @@ public:
     graph_list(const graph_list&) = delete;
     graph_list& operator=(const graph_list&) = delete;
     ~graph_list();
-    void find_paths();
     void display_list(std::ostream& strm) const;
     void display_paths() const;
+    void find_paths();
 
 private:
     void fill_initial_weights();

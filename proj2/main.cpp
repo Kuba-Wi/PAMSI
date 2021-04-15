@@ -11,10 +11,12 @@ int main() {
     graph_list graph{strm};
     strm.close();
     graph.display_list(std::cout);
+
     std::cout << "\n";
     graph.find_paths();
     graph.display_paths();
     std::cout << "\n";
+
     strm.open("../input1.txt");
     if (!strm.is_open()) {
         std::cout << "File not open\n";
@@ -22,6 +24,10 @@ int main() {
     graph_matrix graph_m{strm};
     strm.close();
     graph_m.display_matrix(std::cout);
+
+    std::cout << "\n";
+    graph_m.find_paths();
+    graph_m.display_paths();
 
     return 0;
 }
