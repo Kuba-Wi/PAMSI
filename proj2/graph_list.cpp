@@ -34,7 +34,7 @@ graph_list::~graph_list() {
     delete[] prev_node_;
 }
 
-void graph_list::display_list(std::ostream& strm) const {
+void graph_list::display_graph(std::ostream& strm) const {
     node* ptr;
     for (size_t i = 0; i < node_count_; ++i) {
         ptr = list_[i];
@@ -44,17 +44,6 @@ void graph_list::display_list(std::ostream& strm) const {
             ptr = ptr->next;
         }
     }
-}
-
-void graph_list::display_paths() const {
-    for (size_t i = 0; i < node_count_; ++i) {
-        std::cout << weights_[i] << " ";
-    }
-    std::cout << "\n";
-    for (size_t i = 0; i < node_count_; ++i) {
-        std::cout << prev_node_[i] << " ";
-    }
-    std::cout << "\n";
 }
 
 void graph_list::find_paths() {
@@ -68,14 +57,14 @@ void graph_list::find_paths() {
     }
 
     size_t node_index = start_node_;
-    while (node_index != std::numeric_limits<size_t>::max()) {
+    while (!visited_nodes[node_index]) {
         visited_nodes[node_index] = true;
         node* neighbour = list_[node_index];
         while (neighbour) {
             this->update_weight_and_prev_node(neighbour, node_index, visited_nodes);
             neighbour = neighbour->next;
         }
-        node_index = this->get_cheapest_unvisited_index(visited_nodes);
+        node_index = this->get_cheapest_index(visited_nodes);
     }
 
     delete[] visited_nodes;
@@ -89,7 +78,7 @@ void graph_list::fill_initial_weights() {
     weights_[start_node_] = 0;
 }
 
-size_t graph_list::get_cheapest_unvisited_index(bool* visited) const {
+size_t graph_list::get_cheapest_index(bool* visited) const {
     size_t node_index = start_node_;
     for (size_t i = 0; i < node_count_; ++i) {
         if (!visited[i]) {
@@ -97,7 +86,7 @@ size_t graph_list::get_cheapest_unvisited_index(bool* visited) const {
         }
     }
     if(visited[node_index]) {
-        return std::numeric_limits<size_t>::max();
+        return node_index;
     }
 
     for (size_t i = 0; i < node_count_; ++i) {

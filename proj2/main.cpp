@@ -8,13 +8,13 @@ int main() {
     if (!strm.is_open()) {
         std::cout << "File not open\n";
     }
-    graph_list graph{strm};
+    graph_list graph_l{strm};
     strm.close();
-    graph.display_list(std::cout);
+    graph_l.display_graph(std::cout);
 
     std::cout << "\n";
-    graph.find_paths();
-    graph.display_paths();
+    graph_l.find_paths();
+    graph_l.display_result(std::cout);
     std::cout << "\n";
 
     strm.open("../input1.txt");
@@ -23,11 +23,11 @@ int main() {
     }
     graph_matrix graph_m{strm};
     strm.close();
-    graph_m.display_matrix(std::cout);
+    graph_m.display_graph(std::cout);
 
     std::cout << "\n";
     graph_m.find_paths();
-    graph_m.display_paths();
+    graph_m.display_result(std::cout);
 
     return 0;
 }

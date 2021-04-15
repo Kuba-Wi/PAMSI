@@ -7,5 +7,5 @@ project(graphs)
 set(FLAGS -Wall -pedantic -Wextra)
 
 
-add_executable(${PROJECT_NAME} main.cpp graph_list.cpp graph_matrix.cpp)
+add_executable(${PROJECT_NAME} main.cpp graph_list.cpp graph_matrix.cpp graph.cpp)
 target_compile_options(${PROJECT_NAME} PRIVATE ${FLAGS})

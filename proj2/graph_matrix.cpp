@@ -37,24 +37,13 @@ graph_matrix::~graph_matrix() {
     delete[] prev_node_;
 }
 
-void graph_matrix::display_matrix(std::ostream& strm) {
+void graph_matrix::display_graph(std::ostream& strm) const {
     for (size_t i = 0; i < node_count_; ++i) {
         for (size_t j = 0; j < node_count_; ++j) {
             strm << matrix_[i][j] << " ";
         }
         strm << "\n";
     }
-}
-
-void graph_matrix::display_paths() const {
-    for (size_t i = 0; i < node_count_; ++i) {
-        std::cout << weights_[i] << " ";
-    }
-    std::cout << "\n";
-    for (size_t i = 0; i < node_count_; ++i) {
-        std::cout << prev_node_[i] << " ";
-    }
-    std::cout << "\n";
 }
 
 void graph_matrix::find_paths() {
@@ -68,12 +57,12 @@ void graph_matrix::find_paths() {
     }
 
     size_t node_index = start_node_;
-    while (node_index != std::numeric_limits<size_t>::max()) {
+    while (!visited_nodes[node_index]) {
         visited_nodes[node_index] = true;
         for (size_t i = 0; i < node_count_; ++i) {
             this->update_weight_and_prev_node(i, node_index, visited_nodes);
         }
-        node_index = this->get_cheapest_unvisited_index(visited_nodes);
+        node_index = this->get_cheapest_index(visited_nodes);
     }
 
     delete[] visited_nodes;
@@ -87,7 +76,7 @@ void graph_matrix::fill_initial_weights() {
     weights_[start_node_] = 0;
 }
 
-size_t graph_matrix::get_cheapest_unvisited_index(bool* visited) const {
+size_t graph_matrix::get_cheapest_index(bool* visited) const {
     size_t node_index = start_node_;
     for (size_t i = 0; i < node_count_; ++i) {
         if (!visited[i]) {
@@ -95,7 +84,7 @@ size_t graph_matrix::get_cheapest_unvisited_index(bool* visited) const {
         }
     }
     if(visited[node_index]) {
-        return std::numeric_limits<size_t>::max();
+        return node_index;
     }
 
     for (size_t i = 0; i < node_count_; ++i) {
