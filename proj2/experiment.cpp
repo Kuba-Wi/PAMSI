@@ -1,4 +1,5 @@
 #include "experiment.hpp"
+#include <fstream>
 #include <random>
 #include <vector>
 
@@ -40,4 +41,27 @@ void experiment::build_graph_file(std::ostream& strm, size_t node_count, double 
     for (auto& edge : edges) {
         strm << edge[0] << " " << edge[1] << " " << distr(gen) << "\n";
     }
+}
+
+void experiment::find_path() {
+    graph_matrix_.find_paths();
+    graph_list_.find_paths();
+}
+
+void experiment::build_graphs(const char* filename) {
+    std::ifstream strm{filename};
+    graph_list_.build_graph(strm);
+    strm.close();
+    strm.open(filename);
+    graph_matrix_.build_graph(strm);
+    strm.close();
+}
+
+void experiment::display_results(const char* file_list, const char* file_matrix) const {
+    std::ofstream strm{file_list};
+    graph_list_.display_result(strm);
+    strm.close();
+    strm.open(file_matrix);
+    graph_matrix_.display_result(strm);
+    strm.close();
 }
