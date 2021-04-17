@@ -1,7 +1,7 @@
 #include "graph_list.hpp"
 #include <limits>
 
-graph_list::graph_list(std::istream& strm) {
+void graph_list::build_graph(std::istream& strm) {
     strm >> edge_count_ >> node_count_ >> start_node_;
     list_ = new node*[node_count_];
     for (size_t i = 0; i < node_count_; ++i) {
@@ -47,8 +47,7 @@ void graph_list::display_graph(std::ostream& strm) const {
 }
 
 void graph_list::find_paths() {
-    prev_node_ = new size_t[node_count_];
-    prev_node_[start_node_] = start_node_;
+    this->fill_initial_prev_node();
     this->fill_initial_weights();
 
     bool* visited_nodes = new bool[node_count_];
@@ -78,14 +77,22 @@ void graph_list::fill_initial_weights() {
     weights_[start_node_] = 0;
 }
 
+void graph_list::fill_initial_prev_node() {
+    prev_node_ = new size_t[node_count_];
+    for (size_t i = 0; i < node_count_; ++i) {
+        prev_node_[i] = start_node_;
+    }
+}
+
 size_t graph_list::get_cheapest_index(bool* visited) const {
     size_t node_index = start_node_;
     for (size_t i = 0; i < node_count_; ++i) {
         if (!visited[i]) {
             node_index = i;
+            break;
         }
     }
-    if(visited[node_index]) {
+    if (visited[node_index]) {
         return node_index;
     }
 
@@ -105,5 +112,5 @@ void graph_list::update_weight_and_prev_node(node* neighbour, size_t node_index,
 }
 
 bool graph_list::is_new_path_cheaper(node* neighbour, size_t node_index) const {
-    return weights_[node_index] + neighbour->weight < weights_[neighbour->index];
+    return weights_[node_index] < weights_[neighbour->index] - neighbour->weight;
 }

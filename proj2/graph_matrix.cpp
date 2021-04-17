@@ -1,7 +1,7 @@
 #include "graph_matrix.hpp"
 #include <limits>
 
-graph_matrix::graph_matrix(std::istream& strm) {
+void graph_matrix::build_graph(std::istream& strm) {
     strm >> edge_count_ >> node_count_ >> start_node_;
     matrix_ = new int*[node_count_];
     for (size_t i = 0; i < node_count_; ++i) {
@@ -47,8 +47,7 @@ void graph_matrix::display_graph(std::ostream& strm) const {
 }
 
 void graph_matrix::find_paths() {
-    prev_node_ = new size_t[node_count_];
-    prev_node_[start_node_] = start_node_;
+    this->fill_initial_prev_node();
     this->fill_initial_weights();
 
     bool* visited_nodes = new bool[node_count_];
@@ -76,14 +75,22 @@ void graph_matrix::fill_initial_weights() {
     weights_[start_node_] = 0;
 }
 
+void graph_matrix::fill_initial_prev_node() {
+    prev_node_ = new size_t[node_count_];
+    for (size_t i = 0; i < node_count_; ++i) {
+        prev_node_[i] = start_node_;
+    }
+}
+
 size_t graph_matrix::get_cheapest_index(bool* visited) const {
     size_t node_index = start_node_;
     for (size_t i = 0; i < node_count_; ++i) {
         if (!visited[i]) {
             node_index = i;
+            break;
         }
     }
-    if(visited[node_index]) {
+    if (visited[node_index]) {
         return node_index;
     }
 
@@ -96,7 +103,7 @@ size_t graph_matrix::get_cheapest_index(bool* visited) const {
 }
 
 void graph_matrix::update_weight_and_prev_node(size_t neighbour, size_t node_index, bool* visited) {
-    if(visited[neighbour] || matrix_[node_index][neighbour] == std::numeric_limits<int>::max()) {
+    if (visited[neighbour] || matrix_[node_index][neighbour] == std::numeric_limits<int>::max()) {
         return;
     }
     if (is_new_path_cheaper(neighbour, node_index)) {
@@ -106,5 +113,5 @@ void graph_matrix::update_weight_and_prev_node(size_t neighbour, size_t node_ind
 }
 
 bool graph_matrix::is_new_path_cheaper(size_t neighbour, size_t node_index) const {
-    return weights_[node_index] + matrix_[node_index][neighbour] < weights_[neighbour];
+    return weights_[node_index] < weights_[neighbour] - matrix_[node_index][neighbour];
 }
