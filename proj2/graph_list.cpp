@@ -69,21 +69,6 @@ void graph_list::find_paths() {
     delete[] visited_nodes;
 }
 
-void graph_list::fill_initial_weights() {
-    weights_ = new int[node_count_];
-    for (size_t i = 0; i < node_count_; ++i) {
-        weights_[i] = std::numeric_limits<int>::max();
-    }
-    weights_[start_node_] = 0;
-}
-
-void graph_list::fill_initial_prev_node() {
-    prev_node_ = new size_t[node_count_];
-    for (size_t i = 0; i < node_count_; ++i) {
-        prev_node_[i] = start_node_;
-    }
-}
-
 size_t graph_list::get_cheapest_index(bool* visited) const {
     size_t node_index = start_node_;
     for (size_t i = 0; i < node_count_; ++i) {

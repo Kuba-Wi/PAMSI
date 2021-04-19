@@ -5,11 +5,19 @@
 
 class experiment {
 public:
-    void build_graph_file(std::ostream& strm, size_t node_count, double density) const;
-    void build_full_graph_file(std::ostream& strm, size_t node_count) const;
-    void find_path();
+    void build_graph_file(const char* filename, size_t node_count, double density) const;
+    void build_full_graph_file(const char* filename, size_t node_count) const;
+    void find_path_and_count_time(double& time_list, double& time_matrix);
     void build_graphs(const char* filename);
     void display_results(const char* file_list, const char* file_matrix) const;
+    void display_finding_times(size_t node_count, double density, size_t graph_count);
+    void display_full_graph_finding_times(size_t node_count, size_t graph_count);
+    
+    void count_and_display_all_times(const size_t* node_count,
+                                     size_t node_size,
+                                     const double* density,
+                                     size_t density_size,
+                                     size_t graph_count);
 
 private:
     graph_list graph_list_;

@@ -14,8 +14,11 @@ private:
     void display_path(std::ostream& strm, size_t node_index) const;
 
 protected:
+    void fill_initial_weights();
+    void fill_initial_prev_node();
+
     int* weights_ = nullptr;
     size_t* prev_node_ = nullptr;
     size_t node_count_ = 0;
-    size_t start_node_;
+    size_t start_node_ = 0;
 };

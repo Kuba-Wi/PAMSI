@@ -21,8 +21,6 @@ public:
     void find_paths() override;
 
 private:
-    void fill_initial_weights();
-    void fill_initial_prev_node();
     size_t get_cheapest_index(bool* visited) const;
     void update_weight_and_prev_node(node* neighbour, size_t node_index, bool* visited);
     bool is_new_path_cheaper(node* neighbour, size_t node_index) const;

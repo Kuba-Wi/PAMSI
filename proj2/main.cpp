@@ -1,17 +1,15 @@
-#include <fstream>
-#include <iostream>
 #include "experiment.hpp"
 #include "graph_list.hpp"
 #include "graph_matrix.hpp"
 
 int main() {
-    std::ofstream build{"../test_file.txt"};
+    constexpr size_t graph_count = 100;
+    constexpr size_t density_size = 3;
+    constexpr size_t node_size = 5;
+    constexpr double density[density_size] = {0.25, 0.5, 0.75};
+    constexpr size_t node_count[node_size] = {10, 50, 100, 500, 1000};
     experiment exp;
-    exp.build_graph_file(build, 1000, 0.5);
-    build.close();
-    exp.build_graphs("../test_file.txt");
-    exp.find_path();
-    exp.display_results("../result1.txt", "../result2.txt");
+    exp.count_and_display_all_times(node_count, node_size, density, density_size, graph_count);
 
     return 0;
 }
