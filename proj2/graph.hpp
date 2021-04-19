@@ -4,7 +4,6 @@
 class graph {
 public:
     virtual ~graph() = default;
-    virtual void build_graph(std::istream& strm) = 0;
     virtual void display_graph(std::ostream& strm) const = 0;
     virtual void find_paths() = 0;
 

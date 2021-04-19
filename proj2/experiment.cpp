@@ -3,6 +3,11 @@
 #include <fstream>
 #include <random>
 
+experiment::~experiment() {
+    delete graph_list_;
+    delete graph_matrix_;
+}
+
 void experiment::build_full_graph_file(const char* filename, size_t node_count) const {
     std::ofstream strm{filename};
     std::random_device rd;
@@ -46,13 +51,13 @@ void experiment::build_graph_file(const char* filename, size_t node_count, doubl
 
 void experiment::find_path_and_count_time(double& time_list, double& time_matrix) {
     auto start = std::chrono::high_resolution_clock::now();
-    graph_list_.find_paths();
+    graph_list_->find_paths();
     auto stop = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> interval_ms = stop - start;
     time_list = interval_ms.count();
 
     start = std::chrono::high_resolution_clock::now();
-    graph_matrix_.find_paths();
+    graph_matrix_->find_paths();
     stop = std::chrono::high_resolution_clock::now();
     interval_ms = stop - start;
     time_matrix = interval_ms.count();
@@ -60,19 +65,23 @@ void experiment::find_path_and_count_time(double& time_list, double& time_matrix
 
 void experiment::build_graphs(const char* filename) {
     std::ifstream strm{filename};
-    graph_list_.build_graph(strm);
+    delete graph_list_;
+    graph_list_ = new graph_list{strm};
     strm.close();
+
     strm.open(filename);
-    graph_matrix_.build_graph(strm);
+    delete graph_matrix_;
+    graph_matrix_ = new graph_matrix{strm};
     strm.close();
 }
 
 void experiment::display_results(const char* file_list, const char* file_matrix) const {
     std::ofstream strm{file_list};
-    graph_list_.display_result(strm);
+    graph_list_->display_result(strm);
     strm.close();
+    
     strm.open(file_matrix);
-    graph_matrix_.display_result(strm);
+    graph_matrix_->display_result(strm);
     strm.close();
 }
 

@@ -12,11 +12,11 @@ struct node {
 
 class graph_list : public graph {
 public:
-    graph_list() = default;
+    graph_list(std::istream& strm);
     graph_list(const graph_list&) = delete;
     graph_list& operator=(const graph_list&) = delete;
     ~graph_list() override;
-    void build_graph(std::istream& strm) override;
+    
     void display_graph(std::ostream& strm) const override;
     void find_paths() override;
 

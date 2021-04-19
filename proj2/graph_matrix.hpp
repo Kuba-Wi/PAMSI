@@ -4,11 +4,11 @@
 
 class graph_matrix : public graph {
 public:
-    graph_matrix() = default;
+    graph_matrix(std::istream& strm);
     graph_matrix(const graph_matrix&) = delete;
     graph_matrix& operator=(const graph_matrix&) = delete;
     ~graph_matrix() override;
-    void build_graph(std::istream& strm) override;
+    
     void display_graph(std::ostream& strm) const override;
     void find_paths() override;
 

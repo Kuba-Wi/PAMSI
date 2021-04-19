@@ -1,7 +1,7 @@
 #include "graph_list.hpp"
 #include <limits>
 
-void graph_list::build_graph(std::istream& strm) {
+graph_list::graph_list(std::istream& strm) {
     strm >> edge_count_ >> node_count_ >> start_node_;
     list_ = new node*[node_count_];
     for (size_t i = 0; i < node_count_; ++i) {

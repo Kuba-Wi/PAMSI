@@ -1,4 +1,5 @@
 #include "graph.hpp"
+#include <limits>
 
 void graph::display_result(std::ostream& strm) const {
     for (size_t i = 0; i < node_count_; ++i) {

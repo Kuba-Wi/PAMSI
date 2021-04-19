@@ -1,7 +1,7 @@
 #include "graph_matrix.hpp"
 #include <limits>
 
-void graph_matrix::build_graph(std::istream& strm) {
+graph_matrix::graph_matrix(std::istream& strm) {
     strm >> edge_count_ >> node_count_ >> start_node_;
     matrix_ = new int*[node_count_];
     for (size_t i = 0; i < node_count_; ++i) {
