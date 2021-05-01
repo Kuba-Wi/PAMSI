@@ -98,8 +98,8 @@ void experiment::display_finding_times(size_t node_count, double density, size_t
         this->display_results("../result1.txt", "../result2.txt");
     }
     std::cout << "Density: " << density << "\n";
-    std::cout << "\ttime for list: " << time_list << " ms\n";
-    std::cout << "\ttime for matrix: " << time_matrix << " ms\n";
+    std::cout << "\ttime for list: " << time_list / graph_count << " ms\n";
+    std::cout << "\ttime for matrix: " << time_matrix / graph_count << " ms\n";
 }
 
 void experiment::display_full_graph_finding_times(size_t node_count, size_t graph_count) {
@@ -115,8 +115,8 @@ void experiment::display_full_graph_finding_times(size_t node_count, size_t grap
         this->display_results("../result1.txt", "../result2.txt");
     }
     std::cout << "Full graph:\n";
-    std::cout << "\ttime for list: " << time_list << " ms\n";
-    std::cout << "\ttime for matrix: " << time_matrix << " ms\n";
+    std::cout << "\ttime for list: " << time_list / graph_count << " ms\n";
+    std::cout << "\ttime for matrix: " << time_matrix / graph_count << " ms\n";
 }
 
 void experiment::count_and_display_all_times(const size_t* node_count,
