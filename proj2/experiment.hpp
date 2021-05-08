@@ -13,6 +13,7 @@ public:
     void build_graph_file(const char* filename, size_t node_count, double density) const;
     void build_full_graph_file(const char* filename, size_t node_count) const;
     void find_path_and_count_time(double& time_list, double& time_matrix);
+    void find_paths();
     void build_graphs(const char* filename);
     void display_results(const char* file_list, const char* file_matrix) const;
     void display_finding_times(size_t node_count, double density, size_t graph_count);

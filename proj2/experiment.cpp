@@ -63,6 +63,11 @@ void experiment::find_path_and_count_time(double& time_list, double& time_matrix
     time_matrix = interval_ms.count();
 }
 
+void experiment::find_paths() {
+    graph_list_->find_paths();
+    graph_matrix_->find_paths();
+}
+
 void experiment::build_graphs(const char* filename) {
     std::ifstream strm{filename};
     delete graph_list_;

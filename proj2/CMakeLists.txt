@@ -12,6 +12,5 @@ set(FILES
 )
 set(FLAGS -Wall -pedantic -Wextra)
 
-
 add_executable(${PROJECT_NAME} main.cpp ${FILES})
 target_compile_options(${PROJECT_NAME} PRIVATE ${FLAGS})
