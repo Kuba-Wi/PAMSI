@@ -9,6 +9,8 @@ set(FILES
     graph_matrix.cpp
     graph.cpp
     experiment.cpp
+    graph_list_direct.cpp
+    graph_matrix_direct.cpp
 )
 set(FLAGS -Wall -pedantic -Wextra)
 

@@ -71,12 +71,12 @@ void experiment::find_paths() {
 void experiment::build_graphs(const char* filename) {
     std::ifstream strm{filename};
     delete graph_list_;
-    graph_list_ = new graph_list{strm};
+    graph_list_ = new graph_list_direct{strm};
     strm.close();
 
     strm.open(filename);
     delete graph_matrix_;
-    graph_matrix_ = new graph_matrix{strm};
+    graph_matrix_ = new graph_matrix_direct{strm};
     strm.close();
 }
 

@@ -17,6 +17,8 @@ private:
     void update_weight_and_prev_node(size_t neighbour, size_t node_index, bool* visited);
     bool is_new_path_cheaper(size_t neighbour, size_t node_index) const;
 
+protected:
+    graph_matrix() = default;
     int** matrix_ = nullptr;
     size_t edge_count_;
 };

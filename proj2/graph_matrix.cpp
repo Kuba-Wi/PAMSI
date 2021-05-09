@@ -14,7 +14,6 @@ graph_matrix::graph_matrix(std::istream& strm) {
                 matrix_[i][j] = 0;
             } else {
                 matrix_[i][j] = std::numeric_limits<int>::max();
-                matrix_[j][i] = std::numeric_limits<int>::max();
             }
         }
     }

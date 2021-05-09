@@ -1,7 +1,9 @@
 #pragma once
 #include <ostream>
 #include "graph_list.hpp"
+#include "graph_list_direct.hpp"
 #include "graph_matrix.hpp"
+#include "graph_matrix_direct.hpp"
 
 class experiment {
 public:
@@ -26,6 +28,6 @@ public:
                                      size_t graph_count);
 
 private:
-    graph_list* graph_list_ = nullptr;
-    graph_matrix* graph_matrix_ = nullptr;
+    graph_list_direct* graph_list_ = nullptr;
+    graph_matrix_direct* graph_matrix_ = nullptr;
 };
