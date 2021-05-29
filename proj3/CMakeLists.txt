@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(min_max)
 set(FILES
     board.cpp
+    node.cpp
 )
 set(FLAGS -Wall -pedantic -Wextra)
 

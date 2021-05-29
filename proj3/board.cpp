@@ -3,7 +3,7 @@
 #include <map>
 
 error_code board::put_mark(size_t x, size_t y, mark m) {
-    if (board_.size() == size_ * size_) {
+    if (mark_count_full()) {
         return error_code::size_exceeded;
     }
     if (x >= size_ || y >= size_) {
