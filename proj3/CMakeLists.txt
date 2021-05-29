@@ -4,7 +4,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(min_max)
-set(FILES)
+set(FILES
+    board.cpp
+)
 set(FLAGS -Wall -pedantic -Wextra)
 
 add_executable(${PROJECT_NAME} main.cpp ${FILES})
