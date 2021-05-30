@@ -92,6 +92,8 @@ bool board::check_row_column_win(const std::vector<std::tuple<size_t, size_t, ma
 
 void board::display() const {
     for (const auto& field : board_) {
-        std::cout << std::get<0>(field) << std::get<1>(field) << " " << (std::get<2>(field) == mark::circle ? "circle" : "cross") << "\n";
+        std::cout << std::get<0>(field) 
+                  << std::get<1>(field) << " " 
+                  << (std::get<2>(field) == mark::circle ? "circle" : "cross") << "\n";
     }
 }

@@ -11,7 +11,6 @@ node::node(const board& board, const std::shared_ptr<node>& ptr) :
     mark_to_win_(ptr->mark_to_win_),
     mark_to_lose_(ptr->mark_to_lose_) {
     mark_to_put_ = ptr->mark_to_put_ == mark::circle ? mark::cross : mark::circle;
-    prev_node_ = ptr;
 }
 
 bool node::put_mark(size_t x, size_t y, mark m) {
@@ -22,7 +21,7 @@ bool node::put_mark(size_t x, size_t y, mark m) {
     return false;
 }
 
-void node::make_tree(std::shared_ptr<node>& start_node, size_t index_x, size_t index_y) {
+void node::make_tree(std::shared_ptr<node>& start_node, size_t index_x, size_t index_y, int depth) {
     if (start_node->board_.check_win_condition(start_node->mark_to_win_)) {
         start_node->value_ = 1;
         return;
@@ -32,6 +31,10 @@ void node::make_tree(std::shared_ptr<node>& start_node, size_t index_x, size_t i
         return;
     }
     if (start_node->board_.mark_count_full()) {
+        start_node->value_ = 0;
+        return;
+    }
+    if (depth <= 0) {
         start_node->value_ = 0;
         return;
     }
@@ -47,18 +50,20 @@ void node::make_tree(std::shared_ptr<node>& start_node, size_t index_x, size_t i
                 start_node->next_nodes_.emplace_back(std::make_shared<node>(board_copy, start_node));
                 board_copy = start_node->board_;
 
-                make_tree(start_node->next_nodes_.back(), 0, 0);
+                make_tree(start_node->next_nodes_.back(), index_x, index_y, depth - 1);
             }
         }
     }
 }
 
 void node::assign_values(std::shared_ptr<node>& start_node) {
-    int value = -2;
+    bool value_assigned = false;
+    int value;
     for (auto& node : start_node->next_nodes_) {
         assign_values(node);
-        if (value == -2) {
+        if (!value_assigned) {
             value = node->value_;
+            value_assigned = true;
         } else {
             if (start_node->mark_to_put_ == start_node->mark_to_win_ && node->value_ > value) {
                 value = node->value_;
@@ -67,7 +72,7 @@ void node::assign_values(std::shared_ptr<node>& start_node) {
             }
         }
     }
-    if (value != -2) {
+    if (value_assigned) {
         start_node->value_ = value;
     }
 }
@@ -93,4 +98,9 @@ void node::next_move(std::shared_ptr<node>& ptr) {
             return;
         }
     }
+}
+
+void node::clear_tree(std::shared_ptr<node>& ptr) {
+    ptr->next_nodes_.clear();
+    ptr->value_ = 0;
 }
