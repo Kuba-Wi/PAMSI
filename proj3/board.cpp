@@ -1,5 +1,6 @@
 #include "board.hpp"
 #include <algorithm>
+#include <iostream>
 #include <map>
 
 error_code board::put_mark(size_t x, size_t y, mark m) {
@@ -46,6 +47,18 @@ bool board::check_win_condition(mark m) const {
     return check_row_column_win(board_copy) || check_diagonal_win(board_copy);
 }
 
+std::pair<size_t, size_t> board::added_index(const board& other) const {
+    return {std::get<0>(other.board_.back()), std::get<1>(other.board_.back())};
+}
+
+bool board::equal(const board& other) const {
+    return std::equal(board_.begin(), board_.end(), other.board_.begin(), [](const auto& lhs, const auto& rhs){
+        return std::get<0>(lhs) == std::get<0>(rhs) &&
+               std::get<1>(lhs) == std::get<1>(rhs) &&
+               std::get<2>(lhs) == std::get<2>(rhs);
+    });
+}
+
 bool board::bad_mark(mark m) const {
     return (m == mark::circle && circle_count_ > cross_count_) || 
            (m == mark::cross && cross_count_ > circle_count_);
@@ -75,4 +88,10 @@ bool board::check_row_column_win(const std::vector<std::tuple<size_t, size_t, ma
     }
 
     return (std::any_of(map_y.begin(), map_y.end(), [&](auto& pair){ return pair.second == size_; }));
+}
+
+void board::display() const {
+    for (const auto& field : board_) {
+        std::cout << std::get<0>(field) << std::get<1>(field) << " " << (std::get<2>(field) == mark::circle ? "circle" : "cross") << "\n";
+    }
 }
