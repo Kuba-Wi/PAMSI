@@ -104,3 +104,9 @@ void node::clear_tree(std::shared_ptr<node>& ptr) {
     ptr->next_nodes_.clear();
     ptr->value_ = 0;
 }
+
+bool node::game_end() {
+    return board_.check_win_condition(mark_to_win_) ||
+           board_.check_win_condition(mark_to_lose_) ||
+           board_.mark_count_full();
+}

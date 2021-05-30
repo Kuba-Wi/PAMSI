@@ -13,6 +13,7 @@ public:
     static void next_move(std::shared_ptr<node>& ptr);
     static void clear_tree(std::shared_ptr<node>& ptr);
     void display() { board_.display(); }
+    bool game_end();
 private:
 
     int value_ = 0;
