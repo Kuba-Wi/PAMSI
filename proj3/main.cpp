@@ -5,8 +5,8 @@
 int main() {
     auto min_max_ptr = std::make_shared<node>(3, mark::cross, mark::cross, mark::circle);
     size_t x, y;
+
     node::make_tree(min_max_ptr);
-    node::assign_values(min_max_ptr);
     node::next_move(min_max_ptr);
     while (!min_max_ptr->game_end()) {
         min_max_ptr->display();
@@ -17,7 +17,6 @@ int main() {
         std::cout << "\n";
         node::clear_tree(min_max_ptr);
         node::make_tree(min_max_ptr);
-        node::assign_values(min_max_ptr);
         node::next_move(min_max_ptr);
     }
     min_max_ptr->display();

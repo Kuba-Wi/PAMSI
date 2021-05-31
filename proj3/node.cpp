@@ -23,25 +23,41 @@ bool node::put_mark(size_t x, size_t y, mark m) {
 
 void node::make_tree(std::shared_ptr<node>& start_node, size_t index_x, size_t index_y, int depth) {
     if (start_node->board_.check_win_condition(start_node->mark_to_win_)) {
-        start_node->value_ = 1;
+        start_node->value_ = game_won_;
         return;
     }
     if (start_node->board_.check_win_condition(start_node->mark_to_lose_)) {
-        start_node->value_ = -1;
+        start_node->value_ = game_lost_;
         return;
     }
     if (start_node->board_.mark_count_full()) {
-        start_node->value_ = 0;
+        start_node->value_ = draw_;
         return;
     }
     if (depth <= 0) {
-        start_node->value_ = 0;
+        start_node->value_ = draw_;
         return;
     }
+
+    if (start_node->mark_to_put_ == start_node->mark_to_win_) {
+        start_node->value_ = game_lost_;
+        make_subtree(start_node, index_x, index_y, depth, std::greater<int>());
+    } else {
+        start_node->value_ = game_won_;
+        make_subtree(start_node, index_x, index_y, depth, std::less<int>());
+    }
+}
+
+void node::make_subtree(std::shared_ptr<node>& start_node,
+                        size_t index_x,
+                        size_t index_y, 
+                        int depth, 
+                        std::function<bool(int, int)>&& compare) {
 
     auto size = start_node->board_.get_size();
     auto board_copy = start_node->board_;
     error_code error;
+
     for (size_t i = index_x; i < size; ++i) {
         for (size_t j = index_y; j < size; ++j) {
             error = board_copy.put_mark(i, j, start_node->mark_to_put_);
@@ -51,49 +67,31 @@ void node::make_tree(std::shared_ptr<node>& start_node, size_t index_x, size_t i
                 board_copy = start_node->board_;
 
                 make_tree(start_node->next_nodes_.back(), index_x, index_y, depth - 1);
+                if (compare(start_node->next_nodes_.back()->value_, start_node->value_)) {
+                    start_node->value_ = start_node->next_nodes_.back()->value_;
+                }
             }
         }
-    }
-}
-
-void node::assign_values(std::shared_ptr<node>& start_node) {
-    bool value_assigned = false;
-    int value;
-    for (auto& node : start_node->next_nodes_) {
-        assign_values(node);
-        if (!value_assigned) {
-            value = node->value_;
-            value_assigned = true;
-        } else {
-            if (start_node->mark_to_put_ == start_node->mark_to_win_ && node->value_ > value) {
-                value = node->value_;
-            } else if (start_node->mark_to_put_ == start_node->mark_to_lose_ && node->value_ < value) {
-                value = node->value_;
-            }
-        }
-    }
-    if (value_assigned) {
-        start_node->value_ = value;
     }
 }
 
 void node::next_move(std::shared_ptr<node>& ptr) {
     for (const auto& nod : ptr->next_nodes_) {
-        if (nod->value_ == 1) {
+        if (nod->value_ == game_won_) {
             ptr = nod;
             return;
         }
     }
 
     for (const auto& nod : ptr->next_nodes_) {
-        if (nod->value_ == 0) {
+        if (nod->value_ == draw_) {
             ptr = nod;
             return;
         }
     }
 
     for (const auto& nod : ptr->next_nodes_) {
-        if (nod->value_ == -1) {
+        if (nod->value_ == game_lost_) {
             ptr = nod;
             return;
         }
