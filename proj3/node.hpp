@@ -4,23 +4,35 @@
 #include <vector>
 #include "board.hpp"
 
+const int initial_depth = 5;
+
 class node {
 public:
     node(size_t board_size, mark mark_to_put, mark win, mark lose);
     node(const board& board, const std::shared_ptr<node>& ptr);
     bool put_mark(size_t x, size_t y, mark m);
-    static void make_tree(std::shared_ptr<node>& start_node, size_t index_x = 0, size_t index_y = 0, int depth = 5);
+    static void make_tree(std::shared_ptr<node>& start_node, 
+                          size_t index_x = 0, 
+                          size_t index_y = 0, 
+                          int depth = initial_depth,
+                          int alpha = game_lost_,
+                          int beta = game_won_);
+
     static void next_move(std::shared_ptr<node>& ptr);
     static void clear_tree(std::shared_ptr<node>& ptr);
-    void display() { board_.display(); }
-    bool game_end();
+    void display() const { board_.display(); }
+    bool game_end() const;
 
 private:
     static void make_subtree(std::shared_ptr<node>& start_node,
                       size_t index_x,
                       size_t index_y,
                       int depth,
-                      std::function<bool(int, int)>&& compare);
+                      int alpha,
+                      int beta);
+
+    static auto make_subtree_setup(std::shared_ptr<node>& start_node) -> 
+        std::function<void(std::shared_ptr<node>&, int&, int&)>;
 
     int value_ = 0;
     board board_;
