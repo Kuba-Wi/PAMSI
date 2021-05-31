@@ -1,7 +1,7 @@
 #include "board.hpp"
 #include <algorithm>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 
 error_code board::put_mark(size_t x, size_t y, mark m) {
     if (mark_count_full()) {
@@ -77,8 +77,8 @@ bool board::check_diagonal_win(const std::vector<std::tuple<size_t, size_t, mark
 }
 
 bool board::check_row_column_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const {
-    std::map<size_t, size_t> map_x;
-    std::map<size_t, size_t> map_y;
+    std::unordered_map<size_t, size_t> map_x;
+    std::unordered_map<size_t, size_t> map_y;
     for (const auto& field : board_part) {
         ++map_x[std::get<0>(field)];
         ++map_y[std::get<1>(field)];
