@@ -1,8 +1,9 @@
 #include "node.hpp"
 #include <functional>
+#include <iostream>
 
-node::node(size_t board_size, mark mark_to_put, mark win, mark lose) : 
-    board_(board_size), 
+node::node(size_t board_size, size_t board_marks_to_win, mark mark_to_put, mark win, mark lose) : 
+    board_(board_size, board_marks_to_win), 
     mark_to_put_(mark_to_put), 
     mark_to_win_(win),
     mark_to_lose_(lose) {}
@@ -71,9 +72,9 @@ void node::make_subtree(std::shared_ptr<node>& start_node,
 
                 make_tree(start_node->next_nodes_.back(), index_x, index_y, depth - 1, alpha, beta);
                 assign_values(start_node, alpha, beta);
-                if (beta <= alpha) {
-                    return;
-                }
+                // if (beta <= alpha) {
+                //     return;
+                // }
                 board_copy = start_node->board_;
             }
         }
@@ -99,9 +100,11 @@ auto node::make_subtree_setup(std::shared_ptr<node>& start_node) ->
 }
 
 void node::next_move(std::shared_ptr<node>& ptr) {
+    std::cout << ptr->value_ << ".\n";
     for (const auto& nod : ptr->next_nodes_) {
         if (nod->value_ == game_won_) {
             ptr = nod;
+            std::cout << ptr->value_ << ".\n";
             return;
         }
     }
@@ -109,6 +112,7 @@ void node::next_move(std::shared_ptr<node>& ptr) {
     for (const auto& nod : ptr->next_nodes_) {
         if (nod->value_ == draw_) {
             ptr = nod;
+            std::cout << ptr->value_ << ".\n";
             return;
         }
     }
@@ -116,6 +120,7 @@ void node::next_move(std::shared_ptr<node>& ptr) {
     for (const auto& nod : ptr->next_nodes_) {
         if (nod->value_ == game_lost_) {
             ptr = nod;
+            std::cout << ptr->value_ << ".\n";
             return;
         }
     }

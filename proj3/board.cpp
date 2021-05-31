@@ -32,9 +32,9 @@ error_code board::put_mark(size_t x, size_t y, mark m) {
 }
 
 bool board::check_win_condition(mark m) const {
-    if (board_.size() < 2 * size_ - 1) {
-        return false;
-    }
+    // if (board_.size() < 2 * size_ - 1) {
+    //     return false;
+    // }
 
     std::vector<std::tuple<size_t, size_t, mark>> board_copy;
     std::copy_if(board_.begin(),
@@ -65,29 +65,122 @@ bool board::bad_mark(mark m) const {
 }
 
 bool board::check_diagonal_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const {
-    if (std::count_if(board_part.begin(), board_part.end(), [&](auto& field) {
+    if (board_part.size() == 0) {
+        return false;
+    }
+    std::vector<std::tuple<size_t, size_t, mark>> copy;
+    std::copy_if(board_part.begin(), 
+                 board_part.end(), 
+                 std::back_inserter<std::vector<std::tuple<size_t, size_t, mark>>>(copy), 
+                 [](auto& field){
         return std::get<0>(field) == std::get<1>(field);
-    }) == int(size_)) {
-        return true;
+    });
+    std::sort(copy.begin(), copy.end(), [](auto& lhs, auto& rhs){
+        return std::get<0>(lhs) < std::get<0>(rhs);
+    });
+    int prev = std::get<0>(copy.front()) - 1;
+    size_t counter = 0;
+    for (const auto& [x, y, m] : copy) {
+        if (int(x) == prev + 1) {
+            ++counter;
+            if (counter == marks_to_win_) {
+                return true;
+            }
+        } else {
+            prev = x - 1;
+            counter = 0;
+        }
+        ++prev;
     }
 
-    return (std::count_if(board_part.begin(), board_part.end(), [&](auto& field) {
+    copy.clear();
+    std::copy_if(board_part.begin(), 
+                 board_part.end(), 
+                 std::back_inserter<std::vector<std::tuple<size_t, size_t, mark>>>(copy), 
+                 [&](auto& field){
         return std::get<0>(field) == size_ - std::get<1>(field) - 1;
-    }) == int(size_));
+    });
+    std::sort(copy.begin(), copy.end(), [](auto& lhs, auto& rhs){
+        return std::get<0>(lhs) < std::get<0>(rhs);
+    });
+
+    prev = std::get<0>(copy.front()) - 1;
+    counter = 0;
+    for (const auto& [x, y, m] : copy) {
+        if (int(x) == prev + 1) {
+            ++counter;
+            if (counter == marks_to_win_) {
+                return true;
+            }
+        } else {
+            prev = x - 1;
+            counter = 0;
+        }
+        ++prev;
+    }
+    return false;
 }
 
 bool board::check_row_column_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const {
-    std::unordered_map<size_t, size_t> map_x;
-    std::unordered_map<size_t, size_t> map_y;
-    for (const auto& field : board_part) {
-        ++map_x[std::get<0>(field)];
-        ++map_y[std::get<1>(field)];
+    if (board_part.size() == 0) {
+        return false;
     }
-    if (std::any_of(map_x.begin(), map_x.end(), [&](auto& pair){ return pair.second == size_; })) {
-        return true;
+    auto copy = board_part;
+    std::sort(copy.begin(), copy.end(), [](auto& lhs, auto& rhs){
+        if (std::get<0>(lhs) == std::get<0>(rhs)) {
+            return std::get<1>(lhs) < std::get<1>(rhs);
+        }
+        return (std::get<0>(lhs) < std::get<0>(rhs));
+    });
+
+    int prev = std::get<1>(copy.front()) - 1;
+    size_t counter = 0;
+    size_t row = 0;
+    for (const auto& field : copy) {
+        if (std::get<0>(field) != row) {
+            prev = std::get<1>(field) - 1;
+            counter = 0;
+            row = std::get<0>(field);
+        }
+        if (int(std::get<1>(field)) == prev + 1) {
+            ++counter;
+            if (counter == marks_to_win_) {
+                return true;
+            }
+        } else {
+            counter = 0;
+        }
+        ++prev;
     }
 
-    return (std::any_of(map_y.begin(), map_y.end(), [&](auto& pair){ return pair.second == size_; }));
+    copy = board_part;
+    std::sort(copy.begin(), copy.end(), [](auto& lhs, auto& rhs){
+        if (std::get<1>(lhs) == std::get<1>(rhs)) {
+            return std::get<0>(lhs) < std::get<0>(rhs);
+        }
+        return (std::get<1>(lhs) < std::get<1>(rhs));
+    });
+    prev = std::get<0>(copy.front()) - 1;
+    counter = 0;
+    size_t column = 0;
+    for (const auto& field : copy) {
+        if (std::get<1>(field) != column) {
+            prev = std::get<0>(field) - 1;
+            counter = 0;
+            column = std::get<1>(field);
+        }
+        if (int(std::get<0>(field)) == prev + 1) {
+            ++counter;
+            if (counter == marks_to_win_) {
+                return true;
+            }
+        } else {
+            counter = 0;
+        }
+        ++prev;
+    }
+
+    return false;
 }
 
 void board::display() const {

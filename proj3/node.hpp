@@ -4,11 +4,11 @@
 #include <vector>
 #include "board.hpp"
 
-const int initial_depth = 5;
+const int initial_depth = 6;
 
 class node {
 public:
-    node(size_t board_size, mark mark_to_put, mark win, mark lose);
+    node(size_t board_size, size_t board_marks_to_win, mark mark_to_put, mark win, mark lose);
     node(const board& board, const std::shared_ptr<node>& ptr);
     bool put_mark(size_t x, size_t y, mark m);
     static void make_tree(std::shared_ptr<node>& start_node, 
@@ -25,11 +25,11 @@ public:
 
 private:
     static void make_subtree(std::shared_ptr<node>& start_node,
-                      size_t index_x,
-                      size_t index_y,
-                      int depth,
-                      int alpha,
-                      int beta);
+                             size_t index_x,
+                             size_t index_y,
+                             int depth,
+                             int alpha,
+                             int beta);
 
     static auto make_subtree_setup(std::shared_ptr<node>& start_node) -> 
         std::function<void(std::shared_ptr<node>&, int&, int&)>;
