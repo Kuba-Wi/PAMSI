@@ -3,7 +3,7 @@
 #include <iostream>
 #include <unordered_map>
 
-error_code board::put_mark(size_t x, size_t y, mark m) {
+error_code board::put_mark(uint8_t x, uint8_t y, mark m) {
     if (mark_count_full()) {
         return error_code::size_exceeded;
     }
@@ -32,14 +32,10 @@ error_code board::put_mark(size_t x, size_t y, mark m) {
 }
 
 bool board::check_win_condition(mark m) const {
-    // if (board_.size() < 2 * size_ - 1) {
-    //     return false;
-    // }
-
-    std::vector<std::tuple<size_t, size_t, mark>> board_copy;
+    std::vector<std::tuple<uint8_t, uint8_t, mark>> board_copy;
     std::copy_if(board_.begin(),
                  board_.end(), 
-                 std::back_inserter<std::vector<std::tuple<size_t, size_t, mark>>>(board_copy), 
+                 std::back_inserter<std::vector<std::tuple<uint8_t, uint8_t, mark>>>(board_copy), 
                  [&](const auto& field){
         return std::get<2>(field) == m;
     });
@@ -47,7 +43,7 @@ bool board::check_win_condition(mark m) const {
     return check_row_column_win(board_copy) || check_diagonal_win(board_copy);
 }
 
-std::pair<size_t, size_t> board::added_index(const board& other) const {
+std::pair<uint8_t, uint8_t> board::added_index(const board& other) const {
     return {std::get<0>(other.board_.back()), std::get<1>(other.board_.back())};
 }
 
@@ -64,64 +60,93 @@ bool board::bad_mark(mark m) const {
            (m == mark::cross && cross_count_ > circle_count_);
 }
 
-bool board::check_diagonal_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const {
+bool board::check_diagonal_win(std::vector<std::tuple<uint8_t, uint8_t, mark>>& board_part) const {
     if (board_part.size() == 0) {
         return false;
     }
-    std::vector<std::tuple<size_t, size_t, mark>> copy;
-    std::copy_if(board_part.begin(), 
-                 board_part.end(), 
-                 std::back_inserter<std::vector<std::tuple<size_t, size_t, mark>>>(copy), 
-                 [](auto& field){
-        return std::get<0>(field) == std::get<1>(field);
-    });
-    std::sort(copy.begin(), copy.end(), [](auto& lhs, auto& rhs){
-        return std::get<0>(lhs) < std::get<0>(rhs);
-    });
-    int prev = std::get<0>(copy.front()) - 1;
-    size_t counter = 0;
-    for (const auto& [x, y, m] : copy) {
-        if (int(x) == prev + 1) {
-            ++counter;
-            if (counter == marks_to_win_) {
-                return true;
-            }
-        } else {
-            prev = x - 1;
-            counter = 0;
+
+    std::vector<std::vector<bool>> vec(size_);
+    for (auto& row : vec) {
+        row.resize(size_);
+    }
+    std::sort(board_part.begin(), board_part.end(), [](auto& lhs, auto& rhs){
+        if (std::get<0>(lhs) == std::get<0>(rhs)) {
+            return std::get<1>(lhs) < std::get<1>(rhs);
         }
-        ++prev;
+        return (std::get<0>(lhs) < std::get<0>(rhs));
+    });
+    auto it = board_part.begin();
+    
+    uint8_t i = 0, j = 0;
+    for (; i < size_; ++i) {
+        for (j = 0; j < size_; ++j) {
+            if (it != board_part.end()) {
+                if (i == std::get<0>(*it) && j == std::get<1>(*it)) {
+                    vec[i][j] = true;
+                    ++it;
+                } else {
+                    vec[i][j] = false;
+                }
+            } else {
+                vec[i][j] = false;
+            }
+        }
     }
 
-    copy.clear();
-    std::copy_if(board_part.begin(), 
-                 board_part.end(), 
-                 std::back_inserter<std::vector<std::tuple<size_t, size_t, mark>>>(copy), 
-                 [&](auto& field){
-        return std::get<0>(field) == size_ - std::get<1>(field) - 1;
-    });
-    std::sort(copy.begin(), copy.end(), [](auto& lhs, auto& rhs){
-        return std::get<0>(lhs) < std::get<0>(rhs);
-    });
-
-    prev = std::get<0>(copy.front()) - 1;
-    counter = 0;
-    for (const auto& [x, y, m] : copy) {
-        if (int(x) == prev + 1) {
-            ++counter;
-            if (counter == marks_to_win_) {
-                return true;
+    uint8_t counter = 0;
+    uint8_t counter_anti = 0;
+    for (int row_start = size_ - 1; row_start >= 0; --row_start) {
+        j = 0;
+        counter = 0;
+        counter_anti = 0;
+        for (i = row_start; i < size_; ++i) {
+            if (vec[i][j]) {
+                ++counter;
+                if (counter >= marks_to_win_) {
+                    return true;
+                }
+            } else {
+                counter = 0;
             }
-        } else {
-            prev = x - 1;
-            counter = 0;
+            if (vec[size_ - 1 - i][j++]) {
+                ++counter_anti;
+                if (counter_anti >= marks_to_win_) {
+                    return true;
+                }
+            } else {
+                counter_anti = 0;
+            }
         }
-        ++prev;
     }
+    uint8_t row = 0;
+    for (uint8_t column_start = 1; column_start < size_; ++column_start) {
+        row = 0;
+        counter = 0;
+        counter_anti = 0;
+        for (uint8_t column = column_start; column < size_; ++column) {
+            if (vec[row][column]) {
+                ++counter;
+                if (counter >= marks_to_win_) {
+                    return true;
+                }
+            } else {
+                counter = 0;
+            }
+            if (vec[size_ - 1 - row++][column]) {
+                ++counter_anti;
+                if (counter_anti >= marks_to_win_) {
+                    return true;
+                }
+            } else {
+                counter_anti = 0;
+            }
+        }
+    }
+    
     return false;
 }
 
-bool board::check_row_column_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const {
+bool board::check_row_column_win(const std::vector<std::tuple<uint8_t, uint8_t, mark>>& board_part) const {
     if (board_part.size() == 0) {
         return false;
     }
@@ -134,8 +159,8 @@ bool board::check_row_column_win(const std::vector<std::tuple<size_t, size_t, ma
     });
 
     int prev = std::get<1>(copy.front()) - 1;
-    size_t counter = 0;
-    size_t row = 0;
+    uint8_t counter = 0;
+    uint8_t row = 0;
     for (const auto& field : copy) {
         if (std::get<0>(field) != row) {
             prev = std::get<1>(field) - 1;
@@ -162,7 +187,7 @@ bool board::check_row_column_win(const std::vector<std::tuple<size_t, size_t, ma
     });
     prev = std::get<0>(copy.front()) - 1;
     counter = 0;
-    size_t column = 0;
+    uint8_t column = 0;
     for (const auto& field : copy) {
         if (std::get<1>(field) != column) {
             prev = std::get<0>(field) - 1;
@@ -192,8 +217,8 @@ void board::display() const {
         return (std::get<0>(lhs) < std::get<0>(rhs));
     });
     auto it = copy.begin();
-    for (size_t i = 0; i < size_; ++i) {
-        for (size_t j = 0; j < size_; ++j) {
+    for (uint8_t i = 0; i < size_; ++i) {
+        for (uint8_t j = 0; j < size_; ++j) {
             if (it != copy.end()) {
                 if (std::get<0>(*it) == i && std::get<1>(*it) == j) {
                     std::cout << (std::get<2>(*it) == mark::circle ? "O" : "X") << " ";

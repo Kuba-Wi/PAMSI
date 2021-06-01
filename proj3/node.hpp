@@ -8,12 +8,12 @@ const int initial_depth = 6;
 
 class node {
 public:
-    node(size_t board_size, size_t board_marks_to_win, mark mark_to_put, mark win, mark lose);
+    node(uint8_t board_size, uint8_t board_marks_to_win, mark mark_to_put, mark win, mark lose);
     node(const board& board, const std::shared_ptr<node>& ptr);
-    bool put_mark(size_t x, size_t y, mark m);
+    bool put_mark(uint8_t x, uint8_t y, mark m);
     static void make_tree(std::shared_ptr<node>& start_node, 
-                          size_t index_x = 0, 
-                          size_t index_y = 0, 
+                          uint8_t index_x = 0, 
+                          uint8_t index_y = 0, 
                           int depth = initial_depth,
                           int alpha = game_lost_,
                           int beta = game_won_);
@@ -25,8 +25,8 @@ public:
 
 private:
     static void make_subtree(std::shared_ptr<node>& start_node,
-                             size_t index_x,
-                             size_t index_y,
+                             uint8_t index_x,
+                             uint8_t index_y,
                              int depth,
                              int alpha,
                              int beta);
@@ -43,5 +43,4 @@ private:
     static const int game_won_ = 1;
     static const int draw_ = 0;
     static const int game_lost_ = -1;
-
 };
