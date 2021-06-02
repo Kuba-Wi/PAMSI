@@ -8,7 +8,7 @@ node::node(uint8_t board_size, uint8_t board_marks_to_win, mark mark_to_put, mar
     mark_to_win_(win),
     mark_to_lose_(lose) {}
 
-node::node(const board& board, const std::shared_ptr<node>& ptr) : 
+node::node(const board& board, const std::unique_ptr<node>& ptr) : 
     board_(board),
     mark_to_win_(ptr->mark_to_win_),
     mark_to_lose_(ptr->mark_to_lose_) {
@@ -23,7 +23,7 @@ bool node::put_mark(uint8_t x, uint8_t y, mark m) {
     return false;
 }
 
-void node::make_tree(std::shared_ptr<node>& start_node, 
+void node::make_tree(std::unique_ptr<node>& start_node, 
                      uint8_t index_x, 
                      uint8_t index_y, 
                      int depth,
@@ -50,7 +50,7 @@ void node::make_tree(std::shared_ptr<node>& start_node,
     make_subtree(start_node, index_x, index_y, depth, alpha, beta);
 }
 
-void node::make_subtree(std::shared_ptr<node>& start_node,
+void node::make_subtree(std::unique_ptr<node>& start_node,
                         uint8_t index_x,
                         uint8_t index_y, 
                         int depth, 
@@ -60,7 +60,7 @@ void node::make_subtree(std::shared_ptr<node>& start_node,
     auto size = start_node->board_.get_size();
     auto board_copy = start_node->board_;
     error_code error;
-    std::function<void(std::shared_ptr<node>&, int&, int&)> assign_values;
+    std::function<void(std::unique_ptr<node>&, int&, int&)> assign_values;
     assign_values = make_subtree_setup(start_node);
 
     for (uint8_t i = index_x; i < size; ++i) {
@@ -68,7 +68,7 @@ void node::make_subtree(std::shared_ptr<node>& start_node,
             error = board_copy.put_mark(i, j, start_node->mark_to_put_);
 
             if (error == error_code::ok) {
-                start_node->next_nodes_.emplace_back(std::make_shared<node>(board_copy, start_node));
+                start_node->next_nodes_.emplace_back(std::make_unique<node>(board_copy, start_node));
 
                 make_tree(start_node->next_nodes_.back(), index_x, index_y, depth - 1, alpha, beta);
                 assign_values(start_node, alpha, beta);
@@ -84,52 +84,52 @@ void node::make_subtree(std::shared_ptr<node>& start_node,
     }
 }
 
-auto node::make_subtree_setup(std::shared_ptr<node>& start_node) -> 
-        std::function<void(std::shared_ptr<node>&, int&, int&)> {
+auto node::make_subtree_setup(std::unique_ptr<node>& start_node) -> 
+        std::function<void(std::unique_ptr<node>&, int&, int&)> {
     
     if (start_node->mark_to_put_ == start_node->mark_to_win_) {
         start_node->value_ = game_lost_;
-        return [](std::shared_ptr<node>& nod, [[maybe_unused]] int& alpha, [[maybe_unused]] int& beta){
+        return [](std::unique_ptr<node>& nod, [[maybe_unused]] int& alpha, [[maybe_unused]] int& beta){
             nod->value_ = std::max(nod->next_nodes_.back()->value_, nod->value_);
             alpha = std::max(nod->next_nodes_.back()->value_, alpha);
         };
     } else {
         start_node->value_ = game_won_;
-        return [](std::shared_ptr<node>& nod, [[maybe_unused]] int& alpha, [[maybe_unused]] int& beta){
+        return [](std::unique_ptr<node>& nod, [[maybe_unused]] int& alpha, [[maybe_unused]] int& beta){
             nod->value_ = std::min(nod->next_nodes_.back()->value_, nod->value_);
             beta = std::min(nod->next_nodes_.back()->value_, beta);
         };
     }
 }
 
-void node::next_move(std::shared_ptr<node>& ptr) {
+void node::next_move(std::unique_ptr<node>& ptr) {
     std::cout << ptr->value_ << ".\n";
-    for (const auto& nod : ptr->next_nodes_) {
+    for (auto& nod : ptr->next_nodes_) {
         if (nod->value_ == game_won_) {
-            ptr = nod;
+            ptr = std::move(nod);
             std::cout << ptr->value_ << ".\n";
             return;
         }
     }
 
-    for (const auto& nod : ptr->next_nodes_) {
+    for (auto& nod : ptr->next_nodes_) {
         if (nod->value_ == draw_) {
-            ptr = nod;
+            ptr = std::move(nod);
             std::cout << ptr->value_ << ".\n";
             return;
         }
     }
 
-    for (const auto& nod : ptr->next_nodes_) {
+    for (auto& nod : ptr->next_nodes_) {
         if (nod->value_ == game_lost_) {
-            ptr = nod;
+            ptr = std::move(nod);
             std::cout << ptr->value_ << ".\n";
             return;
         }
     }
 }
 
-void node::clear_tree(std::shared_ptr<node>& ptr) {
+void node::clear_tree(std::unique_ptr<node>& ptr) {
     ptr->next_nodes_.clear();
     ptr->value_ = 0;
 }
