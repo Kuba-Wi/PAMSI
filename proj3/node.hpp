@@ -4,7 +4,7 @@
 #include <vector>
 #include "board.hpp"
 
-const int initial_depth = 6;
+const int initial_depth = 8;
 
 class node {
 public:

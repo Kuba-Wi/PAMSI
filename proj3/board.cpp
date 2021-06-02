@@ -1,7 +1,6 @@
 #include "board.hpp"
 #include <algorithm>
 #include <iostream>
-#include <unordered_map>
 
 error_code board::put_mark(uint8_t x, uint8_t y, mark m) {
     if (mark_count_full()) {
