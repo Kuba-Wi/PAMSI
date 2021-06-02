@@ -3,7 +3,7 @@
 #include <tuple>
 #include <vector>
 
-enum class mark {
+enum class mark : uint8_t {
     circle,
     cross
 };
@@ -18,26 +18,26 @@ enum class error_code {
 
 class board {
 public:
-    board(size_t size, size_t marks_to_win) : size_(size), marks_to_win_(marks_to_win) {}
-    error_code put_mark(size_t x, size_t y, mark m);
+    board(uint8_t size, uint8_t marks_to_win) : size_(size), marks_to_win_(marks_to_win) {}
+    error_code put_mark(uint8_t x, uint8_t y, mark m);
     bool check_win_condition(mark m) const;
     bool mark_count_full() const { return board_.size() == size_ * size_; }
-    size_t get_size() const { return size_; }
-    size_t get_mark_count() const { return board_.size(); }
-    std::pair<size_t, size_t> added_index(const board& other) const;
+    uint8_t get_size() const { return size_; }
+    uint8_t get_mark_count() const { return board_.size(); }
+    std::pair<uint8_t, uint8_t> added_index(const board& other) const;
     bool equal(const board& other) const;
     void display() const;
 private:
     bool bad_mark(mark m) const;
-    bool check_diagonal_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const;
-    bool check_row_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const;
-    bool check_column_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const;
-    void sort_row_column(std::vector<std::tuple<size_t, size_t, mark>>& boar) const;
-    void sort_column_row(std::vector<std::tuple<size_t, size_t, mark>>& boar) const;
+    bool check_diagonal_win(const std::vector<std::tuple<uint8_t, uint8_t, mark>>& board_part) const;
+    bool check_row_win(const std::vector<std::tuple<uint8_t, uint8_t, mark>>& board_part) const;
+    bool check_column_win(const std::vector<std::tuple<uint8_t, uint8_t, mark>>& board_part) const;
+    void sort_row_column(std::vector<std::tuple<uint8_t, uint8_t, mark>>& boar) const;
+    void sort_column_row(std::vector<std::tuple<uint8_t, uint8_t, mark>>& boar) const;
     
-    size_t size_;
-    size_t marks_to_win_;
-    std::vector<std::tuple<size_t, size_t, mark>> board_;
-    size_t circle_count_ = 0;
-    size_t cross_count_ = 0;
+    uint8_t size_;
+    uint8_t marks_to_win_;
+    std::vector<std::tuple<uint8_t, uint8_t, mark>> board_;
+    uint8_t circle_count_ = 0;
+    uint8_t cross_count_ = 0;
 };

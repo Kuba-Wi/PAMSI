@@ -2,7 +2,7 @@
 #include <functional>
 #include <iostream>
 
-node::node(size_t board_size, size_t board_marks_to_win, mark mark_to_put, mark win, mark lose) : 
+node::node(uint8_t board_size, uint8_t board_marks_to_win, mark mark_to_put, mark win, mark lose) : 
     board_(board_size, board_marks_to_win), 
     mark_to_put_(mark_to_put), 
     mark_to_win_(win),
@@ -15,7 +15,7 @@ node::node(const board& board, const std::shared_ptr<node>& ptr) :
     mark_to_put_ = ptr->mark_to_put_ == mark::circle ? mark::cross : mark::circle;
 }
 
-bool node::put_mark(size_t x, size_t y, mark m) {
+bool node::put_mark(uint8_t x, uint8_t y, mark m) {
     if (board_.put_mark(x, y, m) == error_code::ok) {
         mark_to_put_ = mark_to_put_ == mark::circle ? mark::cross : mark::circle;
         return true;
@@ -24,8 +24,8 @@ bool node::put_mark(size_t x, size_t y, mark m) {
 }
 
 void node::make_tree(std::shared_ptr<node>& start_node, 
-                     size_t index_x, 
-                     size_t index_y, 
+                     uint8_t index_x, 
+                     uint8_t index_y, 
                      int depth,
                      int alpha,
                      int beta) {
@@ -51,8 +51,8 @@ void node::make_tree(std::shared_ptr<node>& start_node,
 }
 
 void node::make_subtree(std::shared_ptr<node>& start_node,
-                        size_t index_x,
-                        size_t index_y, 
+                        uint8_t index_x,
+                        uint8_t index_y, 
                         int depth, 
                         int alpha,
                         int beta) {
@@ -63,8 +63,8 @@ void node::make_subtree(std::shared_ptr<node>& start_node,
     std::function<void(std::shared_ptr<node>&, int&, int&)> assign_values;
     assign_values = make_subtree_setup(start_node);
 
-    for (size_t i = index_x; i < size; ++i) {
-        for (size_t j = index_y; j < size; ++j) {
+    for (uint8_t i = index_x; i < size; ++i) {
+        for (uint8_t j = index_y; j < size; ++j) {
             error = board_copy.put_mark(i, j, start_node->mark_to_put_);
 
             if (error == error_code::ok) {
@@ -76,6 +76,9 @@ void node::make_subtree(std::shared_ptr<node>& start_node,
                     return;
                 }
                 board_copy = start_node->board_;
+                if (start_node->next_nodes_.back()) {
+                    start_node->next_nodes_.back()->next_nodes_.clear();
+                }
             }
         }
     }
