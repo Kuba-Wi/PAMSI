@@ -32,10 +32,6 @@ error_code board::put_mark(size_t x, size_t y, mark m) {
 }
 
 bool board::check_win_condition(mark m) const {
-    // if (board_.size() < 2 * size_ - 1) {
-    //     return false;
-    // }
-
     std::vector<std::tuple<size_t, size_t, mark>> board_copy;
     std::copy_if(board_.begin(),
                  board_.end(), 
@@ -44,7 +40,7 @@ bool board::check_win_condition(mark m) const {
         return std::get<2>(field) == m;
     });
 
-    return check_row_column_win(board_copy) || check_diagonal_win(board_copy);
+    return check_row_win(board_copy) || check_column_win(board_copy) || check_diagonal_win(board_copy);
 }
 
 std::pair<size_t, size_t> board::added_index(const board& other) const {
@@ -121,22 +117,17 @@ bool board::check_diagonal_win(const std::vector<std::tuple<size_t, size_t, mark
     return false;
 }
 
-bool board::check_row_column_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const {
+bool board::check_row_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const {
     if (board_part.size() == 0) {
         return false;
     }
-    auto copy = board_part;
-    std::sort(copy.begin(), copy.end(), [](auto& lhs, auto& rhs){
-        if (std::get<0>(lhs) == std::get<0>(rhs)) {
-            return std::get<1>(lhs) < std::get<1>(rhs);
-        }
-        return (std::get<0>(lhs) < std::get<0>(rhs));
-    });
+    auto board_copy = board_part;
+    sort_row_column(board_copy);
 
-    int prev = std::get<1>(copy.front()) - 1;
-    size_t counter = 0;
-    size_t row = 0;
-    for (const auto& field : copy) {
+    int prev = std::get<1>(board_copy.front()) - 1;
+    uint8_t counter = 0;
+    uint8_t row = 0;
+    for (const auto& field : board_copy) {
         if (std::get<0>(field) != row) {
             prev = std::get<1>(field) - 1;
             counter = 0;
@@ -152,18 +143,20 @@ bool board::check_row_column_win(const std::vector<std::tuple<size_t, size_t, ma
         }
         ++prev;
     }
+    return false;
+}
 
-    copy = board_part;
-    std::sort(copy.begin(), copy.end(), [](auto& lhs, auto& rhs){
-        if (std::get<1>(lhs) == std::get<1>(rhs)) {
-            return std::get<0>(lhs) < std::get<0>(rhs);
-        }
-        return (std::get<1>(lhs) < std::get<1>(rhs));
-    });
-    prev = std::get<0>(copy.front()) - 1;
-    counter = 0;
-    size_t column = 0;
-    for (const auto& field : copy) {
+bool board::check_column_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const {
+    if (board_part.size() == 0) {
+        return false;
+    }
+    auto board_copy = board_part;
+    sort_column_row(board_copy);
+
+    int prev = std::get<0>(board_copy.front()) - 1;
+    uint8_t counter = 0;
+    uint8_t column = 0;
+    for (const auto& field : board_copy) {
         if (std::get<1>(field) != column) {
             prev = std::get<0>(field) - 1;
             counter = 0;
@@ -179,8 +172,25 @@ bool board::check_row_column_win(const std::vector<std::tuple<size_t, size_t, ma
         }
         ++prev;
     }
-
     return false;
+}
+
+void board::sort_row_column(std::vector<std::tuple<size_t, size_t, mark>>& boar) const {
+    std::sort(boar.begin(), boar.end(), [](auto& lhs, auto& rhs){
+        if (std::get<0>(lhs) == std::get<0>(rhs)) {
+            return std::get<1>(lhs) < std::get<1>(rhs);
+        }
+        return std::get<0>(lhs) < std::get<0>(rhs);
+    });
+}
+
+void board::sort_column_row(std::vector<std::tuple<size_t, size_t, mark>>& boar) const {
+    std::sort(boar.begin(), boar.end(), [](auto& lhs, auto& rhs){
+        if (std::get<1>(lhs) == std::get<1>(rhs)) {
+            return std::get<0>(lhs) < std::get<0>(rhs);
+        }
+        return (std::get<1>(lhs) < std::get<1>(rhs));
+    });
 }
 
 void board::display() const {

@@ -3,7 +3,7 @@
 #include "node.hpp"
 
 int main() {
-    auto min_max_ptr = std::make_shared<node>(5, 4, mark::cross, mark::cross, mark::circle);
+    auto min_max_ptr = std::make_shared<node>(3, 3, mark::cross, mark::cross, mark::circle);
     size_t x, y;
 
     node::make_tree(min_max_ptr);

@@ -30,7 +30,10 @@ public:
 private:
     bool bad_mark(mark m) const;
     bool check_diagonal_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const;
-    bool check_row_column_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const;
+    bool check_row_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const;
+    bool check_column_win(const std::vector<std::tuple<size_t, size_t, mark>>& board_part) const;
+    void sort_row_column(std::vector<std::tuple<size_t, size_t, mark>>& boar) const;
+    void sort_column_row(std::vector<std::tuple<size_t, size_t, mark>>& boar) const;
     
     size_t size_;
     size_t marks_to_win_;

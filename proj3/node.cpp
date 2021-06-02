@@ -72,9 +72,9 @@ void node::make_subtree(std::shared_ptr<node>& start_node,
 
                 make_tree(start_node->next_nodes_.back(), index_x, index_y, depth - 1, alpha, beta);
                 assign_values(start_node, alpha, beta);
-                // if (beta <= alpha) {
-                //     return;
-                // }
+                if (beta <= alpha) {
+                    return;
+                }
                 board_copy = start_node->board_;
             }
         }
