@@ -29,7 +29,13 @@ public:
     void display() const;
 private:
     bool bad_mark(mark m) const;
+    
     bool check_diagonal_win(const std::vector<std::tuple<uint8_t, uint8_t, mark>>& board_part) const;
+    bool check_diagonal_first_part(const std::vector<std::vector<bool>>& full_board) const;
+    bool check_diagonal_second_part(const std::vector<std::vector<bool>>& full_board) const;
+    void fill_full_board(const std::vector<std::tuple<uint8_t, uint8_t, mark>>& boar, 
+                         std::vector<std::vector<bool>>& full_board) const;
+
     bool check_row_win(const std::vector<std::tuple<uint8_t, uint8_t, mark>>& board_part) const;
     bool check_column_win(const std::vector<std::tuple<uint8_t, uint8_t, mark>>& board_part) const;
     void sort_row_column(std::vector<std::tuple<uint8_t, uint8_t, mark>>& boar) const;

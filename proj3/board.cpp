@@ -64,44 +64,25 @@ bool board::check_diagonal_win(const std::vector<std::tuple<uint8_t, uint8_t, ma
     if (board_part.size() == 0) {
         return false;
     }
-
-    std::vector<std::vector<bool>> vec(size_);
-    for (auto& row : vec) {
-        row.resize(size_);
-    }
     auto board_copy = board_part;
-    std::sort(board_copy.begin(), board_copy.end(), [](auto& lhs, auto& rhs){
-        if (std::get<0>(lhs) == std::get<0>(rhs)) {
-            return std::get<1>(lhs) < std::get<1>(rhs);
-        }
-        return (std::get<0>(lhs) < std::get<0>(rhs));
-    });
-    auto it = board_copy.begin();
-    
-    uint8_t i = 0, j = 0;
-    for (; i < size_; ++i) {
-        for (j = 0; j < size_; ++j) {
-            if (it != board_copy.end()) {
-                if (i == std::get<0>(*it) && j == std::get<1>(*it)) {
-                    vec[i][j] = true;
-                    ++it;
-                } else {
-                    vec[i][j] = false;
-                }
-            } else {
-                vec[i][j] = false;
-            }
-        }
-    }
+    sort_row_column(board_copy);
+    std::vector<std::vector<bool>> full_board;
+    fill_full_board(board_copy, full_board);
 
+    return check_diagonal_first_part(full_board) || 
+           check_diagonal_second_part(full_board);
+}
+
+bool board::check_diagonal_first_part(const std::vector<std::vector<bool>>& full_board) const {
     uint8_t counter = 0;
-    uint8_t counter_anti = 0;
+    uint8_t counter_antydiagonal = 0;
+    uint8_t row, column;
     for (int row_start = size_ - 1; row_start >= 0; --row_start) {
-        j = 0;
+        column = 0;
         counter = 0;
-        counter_anti = 0;
-        for (i = row_start; i < size_; ++i) {
-            if (vec[i][j]) {
+        counter_antydiagonal = 0;
+        for (row = row_start; row < size_; ++row) {
+            if (full_board[row][column]) {
                 ++counter;
                 if (counter >= marks_to_win_) {
                     return true;
@@ -109,23 +90,30 @@ bool board::check_diagonal_win(const std::vector<std::tuple<uint8_t, uint8_t, ma
             } else {
                 counter = 0;
             }
-            if (vec[size_ - 1 - i][j++]) {
-                ++counter_anti;
-                if (counter_anti >= marks_to_win_) {
+            if (full_board[size_ - 1 - row][column++]) {
+                ++counter_antydiagonal;
+                if (counter_antydiagonal >= marks_to_win_) {
                     return true;
                 }
             } else {
-                counter_anti = 0;
+                counter_antydiagonal = 0;
             }
         }
     }
-    uint8_t row = 0;
+    return false;
+}
+
+bool board::check_diagonal_second_part(const std::vector<std::vector<bool>>& full_board) const {
+    
+    uint8_t counter = 0;
+    uint8_t counter_antydiagonal = 0;
+    uint8_t row, column;
     for (uint8_t column_start = 1; column_start < size_; ++column_start) {
         row = 0;
         counter = 0;
-        counter_anti = 0;
-        for (uint8_t column = column_start; column < size_; ++column) {
-            if (vec[row][column]) {
+        counter_antydiagonal = 0;
+        for (column = column_start; column < size_; ++column) {
+            if (full_board[row][column]) {
                 ++counter;
                 if (counter >= marks_to_win_) {
                     return true;
@@ -133,17 +121,16 @@ bool board::check_diagonal_win(const std::vector<std::tuple<uint8_t, uint8_t, ma
             } else {
                 counter = 0;
             }
-            if (vec[size_ - 1 - row++][column]) {
-                ++counter_anti;
-                if (counter_anti >= marks_to_win_) {
+            if (full_board[size_ - 1 - row++][column]) {
+                ++counter_antydiagonal;
+                if (counter_antydiagonal >= marks_to_win_) {
                     return true;
                 }
             } else {
-                counter_anti = 0;
+                counter_antydiagonal = 0;
             }
         }
     }
-    
     return false;
 }
 
@@ -221,6 +208,31 @@ void board::sort_column_row(std::vector<std::tuple<uint8_t, uint8_t, mark>>& boa
         }
         return (std::get<1>(lhs) < std::get<1>(rhs));
     });
+}
+
+void board::fill_full_board(const std::vector<std::tuple<uint8_t, uint8_t, mark>>& boar, 
+                            std::vector<std::vector<bool>>& full_board) const {
+
+    full_board.resize(size_);
+    for (auto& row : full_board) {
+        row.resize(size_);
+    }
+    auto it = boar.begin();
+    
+    for (uint8_t i = 0; i < size_; ++i) {
+        for (uint8_t j = 0; j < size_; ++j) {
+            if (it == boar.end()) {
+                full_board[i][j] = false;
+            } else {
+                if (i == std::get<0>(*it) && j == std::get<1>(*it)) {
+                    full_board[i][j] = true;
+                    ++it;
+                } else {
+                    full_board[i][j] = false;
+                }
+            }
+        }
+    }
 }
 
 void board::display() const {
