@@ -1,6 +1,7 @@
 #include "board.hpp"
 #include <algorithm>
 #include <iostream>
+#include <numeric>
 
 error_code board::put_mark(uint8_t x, uint8_t y, mark m) {
     if (mark_count_full()) {
@@ -32,26 +33,11 @@ error_code board::put_mark(uint8_t x, uint8_t y, mark m) {
 
 bool board::check_win_condition(mark m) const {
     std::vector<std::tuple<uint8_t, uint8_t, mark>> board_copy;
-    std::copy_if(board_.begin(),
-                 board_.end(), 
-                 std::back_inserter<std::vector<std::tuple<uint8_t, uint8_t, mark>>>(board_copy), 
-                 [&](const auto& field){
+    std::copy_if(board_.begin(), board_.end(), std::back_inserter(board_copy), [&](const auto& field){
         return std::get<2>(field) == m;
     });
 
     return check_row_win(board_copy) || check_column_win(board_copy) || check_diagonal_win(board_copy);
-}
-
-std::pair<uint8_t, uint8_t> board::added_index(const board& other) const {
-    return {std::get<0>(other.board_.back()), std::get<1>(other.board_.back())};
-}
-
-bool board::equal(const board& other) const {
-    return std::equal(board_.begin(), board_.end(), other.board_.begin(), [](const auto& lhs, const auto& rhs){
-        return std::get<0>(lhs) == std::get<0>(rhs) &&
-               std::get<1>(lhs) == std::get<1>(rhs) &&
-               std::get<2>(lhs) == std::get<2>(rhs);
-    });
 }
 
 bool board::bad_mark(mark m) const {
@@ -256,4 +242,13 @@ void board::display() const {
         }
         std::cout << "\n";
     }
+}
+
+int board::sum_of_distance_from_center(mark m) const {
+    return std::accumulate(board_.begin(), board_.end(), 0, [&](int init, auto& field) {
+        if (std::get<2>(field) == m) {
+            return init - std::abs(std::get<0>(field) - size_ / 2) - std::abs(std::get<1>(field) - size_ / 2);
+        }
+        return init + std::abs(std::get<0>(field) - size_ / 2) + std::abs(std::get<1>(field) - size_ / 2);
+    });
 }

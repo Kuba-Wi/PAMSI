@@ -24,9 +24,8 @@ public:
     bool mark_count_full() const { return board_.size() == size_ * size_; }
     uint8_t get_size() const { return size_; }
     uint8_t get_mark_count() const { return board_.size(); }
-    std::pair<uint8_t, uint8_t> added_index(const board& other) const;
-    bool equal(const board& other) const;
     void display() const;
+    int sum_of_distance_from_center(mark m) const;
 private:
     bool bad_mark(mark m) const;
     

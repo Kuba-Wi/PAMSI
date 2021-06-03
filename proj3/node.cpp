@@ -1,4 +1,5 @@
 #include "node.hpp"
+#include <algorithm>
 #include <functional>
 #include <iostream>
 
@@ -23,13 +24,7 @@ bool node::put_mark(uint8_t x, uint8_t y, mark m) {
     return false;
 }
 
-void node::make_tree(std::unique_ptr<node>& start_node, 
-                     uint8_t index_x, 
-                     uint8_t index_y, 
-                     int depth,
-                     int alpha,
-                     int beta) {
-
+void node::make_tree(std::unique_ptr<node>& start_node, int depth, int alpha, int beta) {
     if (start_node->board_.check_win_condition(start_node->mark_to_win_)) {
         start_node->value_ = game_won_;
         return;
@@ -38,46 +33,41 @@ void node::make_tree(std::unique_ptr<node>& start_node,
         start_node->value_ = game_lost_;
         return;
     }
-    if (start_node->board_.mark_count_full()) {
-        start_node->value_ = draw_;
+    if (start_node->board_.mark_count_full() || depth <= 0) {
+        start_node->value_ = start_node->board_.sum_of_distance_from_center(start_node->mark_to_win_);
+        start_node->value_ = start_node->value_ > draw_max_ ? draw_max_ : start_node->value_;
+        start_node->value_ = start_node->value_ < draw_min_ ? draw_min_ : start_node->value_;
         return;
     }
-    if (depth <= 0) {
-        start_node->value_ = draw_;
-        return;
-    }
-
-    make_subtree(start_node, index_x, index_y, depth, alpha, beta);
+    make_subtree(start_node, depth, alpha, beta);
 }
 
-void node::make_subtree(std::unique_ptr<node>& start_node,
-                        uint8_t index_x,
-                        uint8_t index_y, 
-                        int depth, 
-                        int alpha,
-                        int beta) {
-
+void node::make_subtree(std::unique_ptr<node>& start_node, int depth, int alpha, int beta) {
     auto size = start_node->board_.get_size();
     auto board_copy = start_node->board_;
     error_code error;
     std::function<void(std::unique_ptr<node>&, int&, int&)> assign_values;
     assign_values = make_subtree_setup(start_node);
 
-    for (uint8_t i = index_x; i < size; ++i) {
-        for (uint8_t j = index_y; j < size; ++j) {
+    for (uint8_t i = 0; i < size; ++i) {
+        for (uint8_t j = 0; j < size; ++j) {
             error = board_copy.put_mark(i, j, start_node->mark_to_put_);
 
             if (error == error_code::ok) {
                 start_node->next_nodes_.emplace_back(std::make_unique<node>(board_copy, start_node));
 
-                make_tree(start_node->next_nodes_.back(), index_x, index_y, depth - 1, alpha, beta);
+                make_tree(start_node->next_nodes_.back(), depth - 1, alpha, beta);
                 assign_values(start_node, alpha, beta);
-                if (beta <= alpha) {
-                    return;
-                }
                 board_copy = start_node->board_;
                 if (start_node->next_nodes_.back()) {
                     start_node->next_nodes_.back()->next_nodes_.clear();
+                }
+                if (beta <= alpha) {
+                    if (start_node->mark_to_put_ == start_node->mark_to_win_)
+                        start_node->value_ = game_won_;
+                    else 
+                        start_node->value_ = game_lost_;
+                    return;
                 }
             }
         }
@@ -89,13 +79,13 @@ auto node::make_subtree_setup(std::unique_ptr<node>& start_node) ->
     
     if (start_node->mark_to_put_ == start_node->mark_to_win_) {
         start_node->value_ = game_lost_;
-        return [](std::unique_ptr<node>& nod, [[maybe_unused]] int& alpha, [[maybe_unused]] int& beta){
+        return [](std::unique_ptr<node>& nod, int& alpha, [[maybe_unused]] int& beta){
             nod->value_ = std::max(nod->next_nodes_.back()->value_, nod->value_);
             alpha = std::max(nod->next_nodes_.back()->value_, alpha);
         };
     } else {
         start_node->value_ = game_won_;
-        return [](std::unique_ptr<node>& nod, [[maybe_unused]] int& alpha, [[maybe_unused]] int& beta){
+        return [](std::unique_ptr<node>& nod, [[maybe_unused]] int& alpha, int& beta){
             nod->value_ = std::min(nod->next_nodes_.back()->value_, nod->value_);
             beta = std::min(nod->next_nodes_.back()->value_, beta);
         };
@@ -104,28 +94,12 @@ auto node::make_subtree_setup(std::unique_ptr<node>& start_node) ->
 
 void node::next_move(std::unique_ptr<node>& ptr) {
     std::cout << ptr->value_ << ".\n";
-    for (auto& nod : ptr->next_nodes_) {
-        if (nod->value_ == game_won_) {
-            ptr = std::move(nod);
-            std::cout << ptr->value_ << ".\n";
-            return;
-        }
-    }
-
-    for (auto& nod : ptr->next_nodes_) {
-        if (nod->value_ == draw_) {
-            ptr = std::move(nod);
-            std::cout << ptr->value_ << ".\n";
-            return;
-        }
-    }
-
-    for (auto& nod : ptr->next_nodes_) {
-        if (nod->value_ == game_lost_) {
-            ptr = std::move(nod);
-            std::cout << ptr->value_ << ".\n";
-            return;
-        }
+    auto it = std::max_element(ptr->next_nodes_.begin(), ptr->next_nodes_.end(), [](auto& lhs, auto& rhs){
+        return lhs->value_ < rhs->value_;
+    });
+    if (it != ptr->next_nodes_.end()) {
+        ptr = std::move(*it);
+        std::cout << ptr->value_ << ".\n";
     }
 }
 
