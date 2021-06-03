@@ -99,7 +99,6 @@ void node::next_move(std::unique_ptr<node>& ptr) {
     });
     if (it != ptr->next_nodes_.end()) {
         ptr = std::move(*it);
-        std::cout << ptr->value_ << ".\n";
     }
 }
 
