@@ -241,6 +241,7 @@ void board::display() const {
         }
         std::cout << "\n";
     }
+    std::cout << "\n";
 }
 
 int board::sum_of_distance_from_center(mark m) const {
