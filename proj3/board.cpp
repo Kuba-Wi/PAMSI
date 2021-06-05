@@ -1,5 +1,6 @@
 #include "board.hpp"
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <numeric>
 
@@ -247,9 +248,11 @@ void board::display() const {
 int board::sum_of_distance_from_center(mark m) const {
     return std::accumulate(board_.begin(), board_.end(), 0, [&](int init, auto& field) {
         if (std::get<2>(field) == m) {
-            return init - std::abs(std::get<0>(field) - size_ / 2) - std::abs(std::get<1>(field) - size_ / 2);
+            return init - std::pow(std::abs(std::get<0>(field) - size_ / 2), 2) - 
+                std::pow(std::abs(std::get<1>(field) - size_ / 2), 2);
         }
-        return init + std::abs(std::get<0>(field) - size_ / 2) + std::abs(std::get<1>(field) - size_ / 2);
+        return init + std::pow(std::abs(std::get<0>(field) - size_ / 2), 2) + 
+            std::pow(std::abs(std::get<1>(field) - size_ / 2), 2);
     });
 }
 

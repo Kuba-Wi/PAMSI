@@ -31,8 +31,8 @@ private:
     mark mark_to_put_;
     mark mark_to_win_;
     mark mark_to_lose_;
-    static const int game_won_ = 10;
-    static const int draw_max_ = 9;
-    static const int draw_min_ = -9;
-    static const int game_lost_ = -10;
+    static const int game_won_ = 100;
+    static const int draw_max_ = 99;
+    static const int draw_min_ = -99;
+    static const int game_lost_ = -100;
 };

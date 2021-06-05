@@ -44,25 +44,43 @@ ApplicationWindow {
         text: "New game"
         onClicked: {
             fieldEnabled = true;
-            tic_tac_model.new_game(parseInt(text_size.text, 10), parseInt(text_marks.text, 10));
+            if (check_user_first.checked) {
+                tic_tac_model.new_game_user(parseInt(text_size.text, 10), parseInt(text_marks.text, 10));
+            } else {
+                tic_tac_model.new_game_computer(parseInt(text_size.text, 10), parseInt(text_marks.text, 10));
+            }
             tic_tac_view.height = field_size * tic_tac_model.rowCount()
             tic_tac_view.width = field_size * tic_tac_model.columnCount()
         }
     }
 
+    CheckBox {
+        id: check_user_first
+        anchors.right: parent.horizontalCenter
+        anchors.top: button_new_game.bottom
+        anchors.topMargin: 10
+    }
+    Label {
+        text: "User has first move"
+        anchors.left: parent.horizontalCenter
+        anchors.verticalCenter: check_user_first.verticalCenter
+    }
+
     TextField {
         id: text_size
-        anchors.top: button_new_game.bottom
-        anchors.topMargin: 20
+        anchors.top: check_user_first.bottom
+        anchors.topMargin: 10
         anchors.right: parent.horizontalCenter
         anchors.rightMargin: 10
+        text: "Set size"
     }
-    
+
     TextField {
         id: text_marks
-        anchors.top: button_new_game.bottom
-        anchors.topMargin: 20
+        anchors.top: check_user_first.bottom
+        anchors.topMargin: 10
         anchors.left: parent.horizontalCenter
         anchors.leftMargin: 10
+        text: "Set marks count"
     }
 }

@@ -74,10 +74,19 @@ public:
     }
 
 public slots:
-    void new_game(int size, int marks_in_row) {
+    void new_game_computer(int size, int marks_in_row) {
         this->beginResetModel();
         min_max_ptr_ = std::make_unique<node>(size, marks_in_row, mark::cross, mark::cross, mark::circle);
         compute_next_move();
+        if (check_game_over()) {
+            emit gameOver();
+        }
+        this->endResetModel();
+    }
+
+    void new_game_user(int size, int marks_in_row) {
+        this->beginResetModel();
+        min_max_ptr_ = std::make_unique<node>(size, marks_in_row, mark::circle, mark::cross, mark::circle);
         if (check_game_over()) {
             emit gameOver();
         }
