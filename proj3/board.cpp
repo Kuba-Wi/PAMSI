@@ -89,7 +89,6 @@ bool board::check_diagonal_first_part(const std::vector<std::vector<bool>>& full
 }
 
 bool board::check_diagonal_second_part(const std::vector<std::vector<bool>>& full_board) const {
-    
     uint8_t counter = 0;
     uint8_t counter_antydiagonal = 0;
     uint8_t row, column;
@@ -251,4 +250,14 @@ int board::sum_of_distance_from_center(mark m) const {
         }
         return init + std::abs(std::get<0>(field) - size_ / 2) + std::abs(std::get<1>(field) - size_ / 2);
     });
+}
+
+mark board::get_mark(uint8_t x, uint8_t y) const {
+    auto it = std::find_if(board_.begin(), board_.end(), [=](auto& field){
+        return std::get<0>(field) == x && std::get<1>(field) == y;
+    });
+    if (it != board_.end()) {
+        return std::get<2>(*it);
+    }
+    return mark::none;
 }

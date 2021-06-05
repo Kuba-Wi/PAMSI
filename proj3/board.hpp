@@ -5,7 +5,8 @@
 
 enum class mark : uint8_t {
     circle,
-    cross
+    cross,
+    none
 };
 
 enum class error_code {
@@ -26,6 +27,7 @@ public:
     uint8_t get_mark_count() const { return board_.size(); }
     void display() const;
     int sum_of_distance_from_center(mark m) const;
+    mark get_mark(uint8_t x, uint8_t y) const;
 private:
     bool bad_mark(mark m) const;
     

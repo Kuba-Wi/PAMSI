@@ -102,13 +102,35 @@ void node::next_move(std::unique_ptr<node>& ptr) {
     }
 }
 
-void node::clear_tree(std::unique_ptr<node>& ptr) {
-    ptr->next_nodes_.clear();
-    ptr->value_ = 0;
+void node::clear_tree() {
+    next_nodes_.clear();
+    value_ = 0;
 }
 
 bool node::game_end() const {
     return board_.check_win_condition(mark_to_win_) ||
            board_.check_win_condition(mark_to_lose_) ||
            board_.mark_count_full();
+}
+
+mark node::get_mark(uint8_t x, uint8_t y) const {
+    return board_.get_mark(x, y);
+}
+
+int node::get_depth() const {
+    constexpr int small = 10;
+    constexpr int middle = 4 * 4;
+    constexpr int large = 5 * 5;
+    auto fields_left = board_.get_size() * board_.get_size();
+    fields_left -= board_.get_mark_count();
+    if (fields_left <= small) {
+        return 10;
+    }
+    if (fields_left <= middle) {
+        return 6;
+    }
+    if (fields_left <= large) {
+        return 5;
+    }
+    return 4;
 }

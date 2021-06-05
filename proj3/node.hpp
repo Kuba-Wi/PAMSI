@@ -10,13 +10,15 @@ public:
     
     static void make_tree(std::unique_ptr<node>& start_node, int depth, int alpha = game_lost_, int beta = game_won_);
     static void next_move(std::unique_ptr<node>& ptr);
-    static void clear_tree(std::unique_ptr<node>& ptr);
+    void clear_tree();
 
     bool put_mark(uint8_t x, uint8_t y, mark m);
     void display() const { board_.display(); }
     bool game_end() const;
+    mark get_mark(uint8_t x, uint8_t y) const;
+    mark get_mark_to_put() const { return mark_to_put_; }
     uint8_t get_board_size() const { return board_.get_size(); }
-    uint8_t get_marks_count() const { return board_.get_mark_count(); } 
+    int get_depth() const;
 
 private:
     static void make_subtree(std::unique_ptr<node>& start_node, int depth, int alpha, int beta);
