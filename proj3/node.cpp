@@ -1,7 +1,6 @@
 #include "node.hpp"
 #include <algorithm>
 #include <functional>
-#include <iostream>
 
 node::node(uint8_t board_size, uint8_t board_marks_to_win, mark mark_to_put, mark win, mark lose) : 
     board_(board_size, board_marks_to_win), 
@@ -93,7 +92,6 @@ auto node::make_subtree_setup(std::unique_ptr<node>& start_node) ->
 }
 
 void node::next_move(std::unique_ptr<node>& ptr) {
-    std::cout << ptr->value_ << ".\n";
     auto it = std::max_element(ptr->next_nodes_.begin(), ptr->next_nodes_.end(), [](auto& lhs, auto& rhs){
         return lhs->value_ < rhs->value_;
     });
