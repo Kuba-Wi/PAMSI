@@ -16,8 +16,6 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Quick REQUIRED)
 
 set(PROJECT_SOURCES
         main.cpp
-        ../board.cpp
-        ../node.cpp
         ticTacModel.cpp
         qml.qrc
 )
@@ -36,4 +34,4 @@ target_compile_options(tic_tac_toe PRIVATE ${FLAGS})
 target_compile_definitions(tic_tac_toe
   PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 target_link_libraries(tic_tac_toe
-  PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick)
+  PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick lib_core)
